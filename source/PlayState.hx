@@ -193,6 +193,9 @@ class PlayState extends MusicBeatState
 	public var goods:Int = 0;
 	public var bads:Int = 0;
 	public var shits:Int = 0;
+	public var maxCombo:Int = 0;
+	public var judgementCounter:FlxText;
+	var totalMS:Float;
 
 	private var generatedMusic:Bool = false;
 	public var endingSong:Bool = false;
@@ -264,12 +267,14 @@ class PlayState extends MusicBeatState
 	var tankmanRun:FlxTypedGroup<TankmenBG>;
 	var foregroundSprites:FlxTypedGroup<BGSprite>;
 
+	//Hud stuff
 	public var songScore:Int = 0;
 	public var songHits:Int = 0;
 	public var songMisses:Int = 0;
 	public var scoreTxt:FlxText;
 	var timeTxt:FlxText;
 	var scoreTxtTween:FlxTween;
+
 
 	public static var campaignScore:Int = 0;
 	public static var campaignMisses:Int = 0;
@@ -1161,6 +1166,17 @@ class PlayState extends MusicBeatState
 		add(botplayTxt);
 		if(ClientPrefs.downScroll) {
 			botplayTxt.y = timeBarBG.y - 78;
+		}
+
+		if(ClientPrefs.judgementCounter)
+		{
+			judgementCounter = new FlxText(-5, 0, 0, 'Highest Combo: 0\nSicks: 0\nGoods: 0\nBads: 0\nShits: 0\nMisses: 0\nAverage: 0\nHuh', 16);
+			judgementCounter.setFormat(Paths.font('vcr.ttf'), 16, 0xFFFFFFFF, LEFT, OUTLINE, 0xFF000000);
+			judgementCounter.screenCenter(Y);
+			judgementCounter.y += 60;
+			judgementCounter.borderSize = 2;
+			add(judgementCounter);
+			judgementCounter.cameras = [camHUD];
 		}
 
 		strumLineNotes.cameras = [camHUD];
@@ -3318,6 +3334,17 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
+		if(judgementCounter != null){
+			var sickF = new FlxTextFormatMarkerPair(new FlxTextFormat(0x00F7FF), '<s>');
+			var goodF = new FlxTextFormatMarkerPair(new FlxTextFormat(0x00FF22), '<g>');
+			var badF = new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF0000), '<b>');
+			var shitF = new FlxTextFormatMarkerPair(new FlxTextFormat(0x4D4D4D), '<?>');
+			var missF = new FlxTextFormatMarkerPair(new FlxTextFormat(0x640000), '<m>');
+			var average = songHits > 0 ? Math.round(totalMS / songHits) : 0;
+				
+			judgementCounter.applyMarkup(' Highest Combo: $maxCombo\n <s>Sicks: $sicks<s> \n <g>Goods: $goods<g> \n <b>Bads: $bads<b>\n <?>Shits: $shits<?> \n <m>Misses: $songMisses<m>\n Average: ${average}ms\n Huh', [sickF, goodF, badF, shitF, missF]);
+		}
+
 		setOnLuas('cameraX', camFollowPos.x);
 		setOnLuas('cameraY', camFollowPos.y);
 		setOnLuas('botPlay', cpuControlled);
@@ -4133,6 +4160,8 @@ class PlayState extends MusicBeatState
 		note.rating = daRating.name;
 		score = daRating.score;
 
+		totalMS += noteDiff;
+
 		if(daRating.noteSplash && !note.noteSplashDisabled)
 		{
 			spawnNoteSplashOnNote(note);
@@ -4688,6 +4717,7 @@ class PlayState extends MusicBeatState
 			{
 				combo += 1;
 				if(combo > 9999) combo = 9999;
+				if(combo > maxCombo) maxCombo = combo;
 				popUpScore(note);
 			}
 			health += note.hitHealth * healthGain;
