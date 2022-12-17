@@ -20,7 +20,7 @@ using StringTools;
 class AchievementsMenuState extends MusicBeatState
 {
 	#if ACHIEVEMENTS_ALLOWED
-	var options:Array<String> = [];
+	var options:Array<Dynamic> = [];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	private var achievementArray:Array<AttachedAchievement> = [];
@@ -46,13 +46,19 @@ class AchievementsMenuState extends MusicBeatState
 		for (i in 0...Achievements.achievementsStuff.length) {
 			if(!Achievements.achievementsStuff[i][3] || Achievements.achievementsMap.exists(Achievements.achievementsStuff[i][2])) {
 				options.push(Achievements.achievementsStuff[i]);
-				achievementIndex.push(i);
 			}
 		}
 
+		for(i in 0...Achievements.modAchievements.length) {
+			if(!Achievements.modAchievements[i][3] || Achievements.achievementsMap.exists(Achievements.modAchievements[i][2])) {
+				options.push(Achievements.modAchievements[i]);
+			}
+		}
+		
 		for (i in 0...options.length) {
-			var achieveName:String = Achievements.achievementsStuff[achievementIndex[i]][2];
-			var optionText:Alphabet = new Alphabet(280, 300, Achievements.isAchievementUnlocked(achieveName) ? Achievements.achievementsStuff[achievementIndex[i]][0] : '?', false);
+			achievementIndex.push(i);
+			var achieveName:String = options[i][2];
+			var optionText:Alphabet = new Alphabet(280, 300, Achievements.isAchievementUnlocked(achieveName) ? options[achievementIndex[i]][0] : '?', false);
 			optionText.isMenuItem = true;
 			optionText.targetY = i - curSelected;
 			optionText.snapToPosition();
@@ -115,7 +121,7 @@ class AchievementsMenuState extends MusicBeatState
 				achievementArray[i].alpha = 1;
 			}
 		}
-		descText.text = Achievements.achievementsStuff[achievementIndex[curSelected]][1];
+		descText.text = options[achievementIndex[curSelected]][1];
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 	}
 	#end

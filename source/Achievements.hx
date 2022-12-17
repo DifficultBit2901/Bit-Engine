@@ -1,3 +1,6 @@
+import haxe.Json;
+import sys.io.File;
+import sys.FileSystem;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
@@ -28,6 +31,7 @@ class Achievements {
 		["Toaster Gamer",				"Have you tried to run the game on a toaster?",		'toastie',				false],
 		["Debugger",					"Beat the \"Test\" Stage from the Chart Editor.",	'debugger',				 true]
 	];
+	public static var modAchievements:Array<Dynamic> = [];
 	public static var achievementsMap:Map<String, Bool> = new Map<String, Bool>();
 
 	public static var henchmenDeath:Int = 0;
@@ -50,6 +54,13 @@ class Achievements {
 				return i;
 			}
 		}
+		#if MODS_ALLOWED
+		for (i in 0...modAchievements.length) {
+			if(modAchievements[i][2] == name) {
+				return i + achievementsStuff.length;
+			}
+		}
+		#end
 		return -1;
 	}
 
@@ -62,6 +73,67 @@ class Achievements {
 				henchmenDeath = FlxG.save.data.henchmenDeath;
 			}
 		}
+
+		// push modded achievements
+		modAchievements = [];
+
+		#if MODS_ALLOWED
+		var disabledMods:Array<String> = [];
+		var modsListPath:String = 'modsList.txt';
+		var directories:Array<String> = [Paths.mods()];
+		var originalLength:Int = directories.length;
+		if(FileSystem.exists(modsListPath))
+		{
+			var stuff:Array<String> = CoolUtil.coolTextFile(modsListPath);
+			for (i in 0...stuff.length)
+			{
+				var splitName:Array<String> = stuff[i].trim().split('|');
+				if(splitName[1] == '0') // Disable mod
+				{
+					disabledMods.push(splitName[0]);
+				}
+				else // Sort mod loading order based on modsList.txt file
+				{
+					var path = haxe.io.Path.join([Paths.mods(), splitName[0]]);
+					//trace('trying to push: ' + splitName[0]);
+					if (sys.FileSystem.isDirectory(path) && !Paths.ignoreModFolders.contains(splitName[0]) && !disabledMods.contains(splitName[0]) && !directories.contains(path + '/'))
+					{
+						directories.push(path + '/');
+						trace('pushed Directory: ' + splitName[0]);
+					}
+				}
+			}
+		}
+
+		var modsDirectories:Array<String> = Paths.getModDirectories();
+		for (folder in modsDirectories)
+		{
+			var pathThing:String = haxe.io.Path.join([Paths.mods(), folder]) + '/';
+			if (!disabledMods.contains(folder) && !directories.contains(pathThing))
+			{
+				directories.push(pathThing);
+				trace('pushed Directory: ' + folder);
+			}
+		}
+
+		for (i in 0...directories.length)
+		{
+			var path = directories[i] + '/data/achievements.json';
+			if(!FileSystem.exists(path))
+			{
+				trace(directories[i] + ' doesn\'t have achievements');
+				continue;
+			}
+			var jsonRaw = File.getContent(path);
+			var jsonAchievements:ModAchievements = Json.parse(jsonRaw);
+			
+			for (acvm in jsonAchievements.achievements)
+			{
+				modAchievements.push([acvm.name, acvm.description, acvm.tag, acvm.hidden]);
+			}
+		}
+		trace(modAchievements);
+		#end
 	}
 }
 
@@ -83,6 +155,11 @@ class AttachedAchievement extends FlxSprite {
 	public function reloadAchievementImage() {
 		if(Achievements.isAchievementUnlocked(tag)) {
 			loadGraphic(Paths.image('achievements/' + tag));
+			#if MODS_ALLOWED
+			var path = Paths.modsImages('achievements/$tag');
+			if(FileSystem.exists(path))
+				loadGraphic(path);
+			#end
 		} else {
 			loadGraphic(Paths.image('achievements/lockedachievement'));
 		}
@@ -111,16 +188,32 @@ class AchievementObject extends FlxSpriteGroup {
 		achievementBG.scrollFactor.set();
 
 		var achievementIcon:FlxSprite = new FlxSprite(achievementBG.x + 10, achievementBG.y + 10).loadGraphic(Paths.image('achievements/' + name));
+		#if MODS_ALLOWED
+		var path = Paths.modsImages('achievements/$name');
+		if(FileSystem.exists(path)){
+			achievementIcon.loadGraphic(path);
+		}
+		else
+			achievementIcon.loadGraphic(Paths.image('achievements/' + name));
+		#end
 		achievementIcon.scrollFactor.set();
 		achievementIcon.setGraphicSize(Std.int(achievementIcon.width * (2 / 3)));
 		achievementIcon.updateHitbox();
 		achievementIcon.antialiasing = ClientPrefs.globalAntialiasing;
 
-		var achievementName:FlxText = new FlxText(achievementIcon.x + achievementIcon.width + 20, achievementIcon.y + 16, 280, Achievements.achievementsStuff[id][0], 16);
+		var achieves = Achievements.achievementsStuff;
+		#if MODS_ALLOWED
+		if(id >= achieves.length){
+			id -= achieves.length;
+			achieves = Achievements.modAchievements;
+		}
+		#end
+
+		var achievementName:FlxText = new FlxText(achievementIcon.x + achievementIcon.width + 20, achievementIcon.y + 16, 280, achieves[id][0], 16);
 		achievementName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT);
 		achievementName.scrollFactor.set();
 
-		var achievementText:FlxText = new FlxText(achievementName.x, achievementName.y + 32, 280, Achievements.achievementsStuff[id][1], 16);
+		var achievementText:FlxText = new FlxText(achievementName.x, achievementName.y + 32, 280, achieves[id][1], 16);
 		achievementText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT);
 		achievementText.scrollFactor.set();
 
@@ -156,4 +249,15 @@ class AchievementObject extends FlxSpriteGroup {
 		}
 		super.destroy();
 	}
+}
+
+typedef ModdedAchievement = {
+	name:String,
+	description:String,
+	hidden:Bool,
+	tag:String
+}
+
+typedef ModAchievements = {
+	achievements:Array<ModdedAchievement>
 }

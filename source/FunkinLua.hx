@@ -2602,6 +2602,17 @@ class FunkinLua {
 			return Paths.getTextFromFile(path, ignoreModFolders);
 		});
 
+		// achievement shit
+		Lua_helper.add_callback(lua, 'grantAchievement', function(tag:String){
+			#if ACHIEVEMENTS_ALLOWED
+			if(Achievements.isAchievementUnlocked(tag)) return;
+			Achievements.unlockAchievement(tag);
+			PlayState.instance.startAchievement(tag);
+			#else
+			luaTrace('Achievements aren\'t allowed on this build', false, false, FlxColor.RED);
+			#end
+		});
+
 		// DEPRECATED, DONT MESS WITH THESE SHITS, ITS JUST THERE FOR BACKWARD COMPATIBILITY
 		Lua_helper.add_callback(lua, "objectPlayAnimation", function(obj:String, name:String, forced:Bool = false, ?startFrame:Int = 0) {
 			luaTrace("objectPlayAnimation is deprecated! Use playAnim instead", false, true);
