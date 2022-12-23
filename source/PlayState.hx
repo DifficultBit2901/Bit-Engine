@@ -2911,6 +2911,69 @@ class PlayState extends MusicBeatState
 		}*/
 		callOnLuas('onUpdate', [elapsed]);
 
+		// Funni movement
+		if(ClientPrefs.movement)
+		{
+			var speed = 150;
+			var scaleSpeed = 1 * boyfriend.jsonScale;
+			if(controls.NOTE_DOWN_R || controls.NOTE_LEFT_R || controls.NOTE_UP_R || controls.NOTE_RIGHT_R)
+			{
+				boyfriend.scale.set(1 * boyfriend.jsonScale, 1 * boyfriend.jsonScale);
+				// boyfriend.updateHitbox();
+			}
+
+			if(controls.NOTE_DOWN)
+			{
+				if(boyfriend.scale.y < 0.5 * boyfriend.jsonScale)
+					boyfriend.scale.add(0, scaleSpeed * elapsed);
+				else if(boyfriend.scale.y > 0.55 * boyfriend.jsonScale)
+					boyfriend.scale.add(0, -scaleSpeed * elapsed);
+
+				// boyfriend.updateHitbox();
+			}
+			if(controls.NOTE_UP)
+			{
+				if(boyfriend.scale.y < 1.4 * boyfriend.jsonScale)
+					boyfriend.scale.add(0, scaleSpeed * elapsed);
+				else if(boyfriend.scale.y > 1.45 * boyfriend.jsonScale)
+					boyfriend.scale.add(0, -scaleSpeed * elapsed);
+
+				// boyfriend.updateHitbox();
+			}
+			if(controls.NOTE_LEFT)
+			{
+				if(boyfriend.scale.y < 0.55 * boyfriend.jsonScale)
+					boyfriend.scale.add(0, scaleSpeed * elapsed);
+				else if(boyfriend.scale.y > 0.6 * boyfriend.jsonScale)
+					boyfriend.scale.add(0, -scaleSpeed * elapsed);
+				if(boyfriend.scale.x < 1.45 * boyfriend.jsonScale)
+					boyfriend.scale.add(scaleSpeed * elapsed);
+				else if(boyfriend.scale.x > 1.5 * boyfriend.jsonScale)
+					boyfriend.scale.add(-scaleSpeed * elapsed);
+
+				// boyfriend.updateHitbox();
+
+				boyfriend.flipX = false;
+				boyfriend.x -= speed * elapsed;
+			}
+			if(controls.NOTE_RIGHT)
+			{
+				if(boyfriend.scale.y < 0.55 * boyfriend.jsonScale)
+					boyfriend.scale.add(0, scaleSpeed * elapsed);
+				else if(boyfriend.scale.y > 0.6 * boyfriend.jsonScale)
+					boyfriend.scale.add(0, -scaleSpeed * elapsed);
+				if(boyfriend.scale.x < 1.45 * boyfriend.jsonScale)
+					boyfriend.scale.add(scaleSpeed * elapsed);
+				else if(boyfriend.scale.x > 1.5 * boyfriend.jsonScale)
+					boyfriend.scale.add(-scaleSpeed * elapsed);
+
+				// boyfriend.updateHitbox();
+
+				boyfriend.flipX = true;
+				boyfriend.x += speed * elapsed;
+			}
+		}
+
 		switch (curStage)
 		{
 			case 'tank':

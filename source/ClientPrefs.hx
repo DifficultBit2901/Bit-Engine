@@ -63,6 +63,7 @@ class ClientPrefs {
 
 	//New stuff
 	public static var judgementCounter:Bool = true;
+	public static var movement:Bool = false;
 
 	//Every key has two binds, add your key bind down here and then add your control on options/ControlsSubState.hx and Controls.hx
 	public static var keyBinds:Map<String, Array<FlxKey>> = [
@@ -136,6 +137,7 @@ class ClientPrefs {
 
 		//New stuff
 		FlxG.save.data.judgementCounter = judgementCounter;
+		FlxG.save.data.movement = movement;
 	
 		FlxG.save.flush();
 
@@ -252,6 +254,8 @@ class ClientPrefs {
 		//New stuff
 		if(FlxG.save.data.judgementCounter != null)
 			judgementCounter = FlxG.save.data.judgementCounter;
+		if(FlxG.save.data.movement != null)
+			movement = FlxG.save.data.movement;
 
 		if(FlxG.save.data.gameplaySettings != null)
 		{
