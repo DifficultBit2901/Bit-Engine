@@ -330,6 +330,11 @@ class PlayState extends MusicBeatState
 	// stores the last combo score objects in an array
 	public static var lastScore:Array<FlxSprite> = [];
 
+	// Trail stuff
+	var bfTrail:FlxTrail;
+	var gfTrail:FlxTrail;
+	var dadTrail:FlxTrail;
+
 	override public function create()
 	{
 		//trace('Playback Rate: ' + playbackRate);
@@ -984,6 +989,17 @@ class PlayState extends MusicBeatState
 		startCharacterPos(boyfriend);
 		boyfriendGroup.add(boyfriend);
 		startCharacterLua(boyfriend.curCharacter);
+
+		// Trail stuff
+		bfTrail = new FlxTrail(boyfriend, null, 5, 7, 0.4, 0.04);
+		bfTrail.visible = false;
+		insert(members.indexOf(gfGroup), bfTrail);
+		gfTrail = new FlxTrail(gf, null, 5, 7, 0.4, 0.04);
+		gfTrail.visible = false;
+		insert(members.indexOf(gfGroup), gfTrail);
+		dadTrail = new FlxTrail(dad, null, 5, 7, 0.4, 0.04);
+		dadTrail.visible = false;
+		insert(members.indexOf(gfGroup), dadTrail);
 
 		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
 		if(gf != null)
@@ -3831,6 +3847,16 @@ class PlayState extends MusicBeatState
 				} else {
 					FunkinLua.setVarInArray(this, value1, value2);
 				}
+			// Trail stuff
+			case 'Toggle Trail':
+				var fuck = bfTrail;
+				switch(value1.toLowerCase()){
+					case 'gf' | 'girlfriend':
+						fuck = gfTrail;
+					case 'dad':
+						fuck = dadTrail;
+				}
+				fuck.visible = value2 == "true" || value2 == '1' || value2 == 'on';
 		}
 		callOnLuas('onEvent', [eventName, value1, value2]);
 	}
