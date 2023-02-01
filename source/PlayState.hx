@@ -990,12 +990,6 @@ class PlayState extends MusicBeatState
 		startCharacterLua(boyfriend.curCharacter);
 
 		// Trail stuff
-		bfTrail = new FlxTrail(boyfriend, null, 5, 7, 0.4, 0.04);
-		bfTrail.visible = false;
-		insert(members.indexOf(gfGroup), bfTrail);
-		dadTrail = new FlxTrail(dad, null, 5, 7, 0.4, 0.04);
-		dadTrail.visible = false;
-		insert(members.indexOf(gfGroup), dadTrail);
 
 		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
 		if(gf != null)
@@ -3827,11 +3821,12 @@ class PlayState extends MusicBeatState
 							boyfriend = boyfriendMap.get(value2);
 							boyfriend.alpha = lastAlpha;
 							iconP1.changeIcon(boyfriend.healthIcon);
-							remove(bfTrail);
-							bfTrail = new FlxTrail(boyfriend, null, 5, 7, 0.4, 0.04);
-							bfTrail.visible = false;
-							insert(members.indexOf(gfGroup), bfTrail);
-							
+							if(bfTrail != null){
+								remove(bfTrail);
+								bfTrail = new FlxTrail(boyfriend, null, 7, 3, 0.4, 0.04);
+								bfTrail.visible = false;
+								insert(members.indexOf(gfGroup), bfTrail);
+							}
 						}
 						setOnLuas('boyfriendName', boyfriend.curCharacter);
 
@@ -3854,10 +3849,13 @@ class PlayState extends MusicBeatState
 							}
 							dad.alpha = lastAlpha;
 							iconP2.changeIcon(dad.healthIcon);
-							remove(dadTrail);
-							dadTrail = new FlxTrail(dad, null, 5, 7, 0.4, 0.04);
-							dadTrail.visible = false;
-							insert(members.indexOf(gfGroup), dadTrail);
+							if(dadTrail != null)
+							{
+								remove(dadTrail);
+								dadTrail = new FlxTrail(dad, null, 7, 3, 0.4, 0.04);
+								dadTrail.visible = false;
+								insert(members.indexOf(gfGroup), dadTrail);
+							}
 						}
 						setOnLuas('dadName', dad.curCharacter);
 
@@ -3917,6 +3915,18 @@ class PlayState extends MusicBeatState
 				}
 			// Trail stuff
 			case 'Toggle Trail':
+				if(value1.toLowerCase() == 'dad' && dadTrail == null)	
+				{
+					dadTrail = new FlxTrail(dad, null, 7, 3, 0.4, 0.04);
+					dadTrail.visible = false;
+					insert(members.indexOf(gfGroup), dadTrail);
+				}
+				else if(bfTrail == null)
+				{
+					bfTrail = new FlxTrail(boyfriend, null, 7, 3, 0.4, 0.04);
+					bfTrail.visible = false;
+					insert(members.indexOf(gfGroup), bfTrail);
+				}
 				var fuck = bfTrail;
 				switch(value1.toLowerCase()){
 					case 'dad':
