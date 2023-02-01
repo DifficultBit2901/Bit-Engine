@@ -332,7 +332,6 @@ class PlayState extends MusicBeatState
 
 	// Trail stuff
 	var bfTrail:FlxTrail;
-	var gfTrail:FlxTrail;
 	var dadTrail:FlxTrail;
 
 	override public function create()
@@ -994,9 +993,6 @@ class PlayState extends MusicBeatState
 		bfTrail = new FlxTrail(boyfriend, null, 5, 7, 0.4, 0.04);
 		bfTrail.visible = false;
 		insert(members.indexOf(gfGroup), bfTrail);
-		gfTrail = new FlxTrail(gf, null, 5, 7, 0.4, 0.04);
-		gfTrail.visible = false;
-		insert(members.indexOf(gfGroup), gfTrail);
 		dadTrail = new FlxTrail(dad, null, 5, 7, 0.4, 0.04);
 		dadTrail.visible = false;
 		insert(members.indexOf(gfGroup), dadTrail);
@@ -1186,7 +1182,7 @@ class PlayState extends MusicBeatState
 
 		if(ClientPrefs.judgementCounter)
 		{
-			judgementCounter = new FlxText(-5, 0, 0, 'Highest Combo: 0\nSicks: 0\nGoods: 0\nBads: 0\nShits: 0\nMisses: 0\nAverage: 0\nHuh', 16);
+			judgementCounter = new FlxText(-5, 0, 0, 'Highest Combo: 0\nSicks: 0\nGoods: 0\nBads: 0\nShits: 0\nMisses: 0\nAverage: 0', 16);
 			judgementCounter.setFormat(Paths.font('vcr.ttf'), 16, 0xFFFFFFFF, LEFT, OUTLINE, 0xFF000000);
 			judgementCounter.screenCenter(Y);
 			judgementCounter.y += 60;
@@ -3421,7 +3417,7 @@ class PlayState extends MusicBeatState
 			var missF = new FlxTextFormatMarkerPair(new FlxTextFormat(0x640000), '<m>');
 			var average = songHits > 0 ? Math.round(totalMS / songHits) : 0;
 				
-			judgementCounter.applyMarkup(' Highest Combo: $maxCombo\n <s>Sicks: $sicks<s> \n <g>Goods: $goods<g> \n <b>Bads: $bads<b>\n <?>Shits: $shits<?> \n <m>Misses: $songMisses<m>\n Average: ${average}ms\n Huh', [sickF, goodF, badF, shitF, missF]);
+			judgementCounter.applyMarkup(' Highest Combo: $maxCombo\n <s>Sicks: $sicks<s> \n <g>Goods: $goods<g> \n <b>Bads: $bads<b>\n <?>Shits: $shits<?> \n <m>Misses: $songMisses<m>\n Average: ${average}ms', [sickF, goodF, badF, shitF, missF]);
 		}
 
 		setOnLuas('cameraX', camFollowPos.x);
@@ -3831,6 +3827,11 @@ class PlayState extends MusicBeatState
 							boyfriend = boyfriendMap.get(value2);
 							boyfriend.alpha = lastAlpha;
 							iconP1.changeIcon(boyfriend.healthIcon);
+							remove(bfTrail);
+							bfTrail = new FlxTrail(boyfriend, null, 5, 7, 0.4, 0.04);
+							bfTrail.visible = false;
+							insert(members.indexOf(gfGroup), bfTrail);
+							
 						}
 						setOnLuas('boyfriendName', boyfriend.curCharacter);
 
@@ -3853,6 +3854,10 @@ class PlayState extends MusicBeatState
 							}
 							dad.alpha = lastAlpha;
 							iconP2.changeIcon(dad.healthIcon);
+							remove(dadTrail);
+							dadTrail = new FlxTrail(dad, null, 5, 7, 0.4, 0.04);
+							dadTrail.visible = false;
+							insert(members.indexOf(gfGroup), dadTrail);
 						}
 						setOnLuas('dadName', dad.curCharacter);
 
@@ -3914,8 +3919,6 @@ class PlayState extends MusicBeatState
 			case 'Toggle Trail':
 				var fuck = bfTrail;
 				switch(value1.toLowerCase()){
-					case 'gf' | 'girlfriend':
-						fuck = gfTrail;
 					case 'dad':
 						fuck = dadTrail;
 				}
