@@ -54,6 +54,8 @@ class ClientPrefs {
 		'opponentplay' => false
 	];
 
+	public static var customSettings:Map<String, Map<String, Dynamic>> = [];
+
 	public static var comboOffset:Array<Int> = [0, 0, 0, 0];
 	public static var ratingOffset:Int = 0;
 	public static var sickWindow:Int = 45;
@@ -134,6 +136,7 @@ class ClientPrefs {
 		FlxG.save.data.pauseMusic = pauseMusic;
 		FlxG.save.data.checkForUpdates = checkForUpdates;
 		FlxG.save.data.comboStacking = comboStacking;
+		FlxG.save.data.customSettings = customSettings;
 
 		//New stuff
 		FlxG.save.data.judgementCounter = judgementCounter;
@@ -265,6 +268,14 @@ class ClientPrefs {
 				gameplaySettings.set(name, value);
 			}
 		}
+		if(FlxG.save.data.customSettings != null)
+		{
+			var savedMap:Map<String, Dynamic> = FlxG.save.data.customSettings;
+			for (name => value in savedMap)
+			{
+				customSettings.set(name, value);
+			}
+		}
 		
 		// flixel automatically saves your volume!
 		if(FlxG.save.data.volume != null)
@@ -295,6 +306,12 @@ class ClientPrefs {
 
 	inline public static function getGameplaySetting(name:String, defaultValue:Dynamic):Dynamic {
 		return /*PlayState.isStoryMode ? defaultValue : */ (gameplaySettings.exists(name) ? gameplaySettings.get(name) : defaultValue);
+	}
+
+	inline public static function getCustomSetting(mod:String, name:String, defaultValue:Dynamic) {
+		var map = customSettings.get(mod);
+		if(map == null) return defaultValue;
+		return (map.exists(name) ? map.get(name) : defaultValue);
 	}
 
 	public static function reloadControls() {

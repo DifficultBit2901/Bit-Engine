@@ -965,6 +965,19 @@ class FunkinLua {
 			}
 		});
 
+		Lua_helper.add_callback(lua, 'getCustomSetting', function(variable:String){
+			var result = ClientPrefs.getCustomSetting(Paths.currentModDirectory, variable, null);
+			if(result == null) Lua.pushnil(lua);
+			return result;
+		});
+
+		Lua_helper.add_callback(lua, 'setCustomSetting', function(variable:String, value){
+			if(!ClientPrefs.customSettings.exists(Paths.currentModDirectory))
+				return;
+			var map = ClientPrefs.customSettings.get(Paths.currentModDirectory);
+			map.set(variable, value);
+		});
+
 		Lua_helper.add_callback(lua, "getProperty", function(variable:String) {
 			var result:Dynamic = null;
 			var killMe:Array<String> = variable.split('.');

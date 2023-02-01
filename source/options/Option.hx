@@ -49,8 +49,9 @@ class Option
 	public var displayFormat:String = '%v'; //How String/Float/Percent/Int values are shown, %v = Current value, %d = Default value
 	public var description:String = '';
 	public var name:String = 'Unknown';
+	private var mod:String = ''; // For custom options
 
-	public function new(name:String, description:String = '', variable:String, type:String = 'bool', defaultValue:Dynamic = 'null variable value', ?options:Array<String> = null)
+	public function new(name:String, description:String = '', variable:String, type:String = 'bool', defaultValue:Dynamic = 'null variable value', ?options:Array<String> = null, mod:String = '')
 	{
 		this.name = name;
 		this.description = description;
@@ -58,6 +59,7 @@ class Option
 		this.type = type;
 		this.defaultValue = defaultValue;
 		this.options = options;
+		this.mod = mod;
 
 		if(defaultValue == 'null variable value')
 		{
@@ -109,11 +111,22 @@ class Option
 
 	public function getValue():Dynamic
 	{
-		return Reflect.getProperty(ClientPrefs, variable);
+		if(Reflect.hasField(ClientPrefs, variable))
+			return Reflect.getProperty(ClientPrefs, variable);
+		else
+			if(ClientPrefs.customSettings.exists(this.mod))
+				return ClientPrefs.getCustomSetting(this.mod, variable, this.defaultValue);
+		return this.defaultValue;
 	}
 	public function setValue(value:Dynamic)
 	{
-		Reflect.setProperty(ClientPrefs, variable, value);
+		if(Reflect.hasField(ClientPrefs, variable))
+			Reflect.setProperty(ClientPrefs, variable, value);
+		else {
+			if(!ClientPrefs.customSettings.exists(mod))
+				ClientPrefs.customSettings.set(mod, new Map<String, Dynamic>());
+			ClientPrefs.customSettings.get(mod).set(variable, value);
+		}
 	}
 
 	public function setChild(child:Alphabet)

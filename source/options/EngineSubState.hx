@@ -48,6 +48,73 @@ class EngineSubState extends BaseOptionsMenu
         false);
         addOption(option);
 
+		#if MODS_ALLOWED
+		var disabledMods:Array<String> = [];
+		var modsListPath:String = 'modsList.txt';
+		var directories:Array<String> = [Paths.mods()];
+		var originalLength:Int = directories.length;
+		if(sys.FileSystem.exists(modsListPath))
+		{
+			var stuff:Array<String> = CoolUtil.coolTextFile(modsListPath);
+			for (i in 0...stuff.length)
+			{
+				var splitName:Array<String> = stuff[i].trim().split('|');
+				if(splitName[1] == '0') // Disable mod
+				{
+					disabledMods.push(splitName[0]);
+				}
+				else // Sort mod loading order based on modsList.txt file
+				{
+					var path = haxe.io.Path.join([Paths.mods(), splitName[0]]);
+					//trace('trying to push: ' + splitName[0]);
+					if (sys.FileSystem.isDirectory(path) && !Paths.ignoreModFolders.contains(splitName[0]) && !disabledMods.contains(splitName[0]) && !directories.contains(path + '/'))
+					{
+						directories.push(path + '/');
+						trace('pushed Directory: ' + splitName[0]);
+					}
+				}
+			}
+		}
+
+		var modsDirectories:Array<String> = Paths.getModDirectories();
+		for (folder in modsDirectories)
+		{
+			var pathThing:String = haxe.io.Path.join([Paths.mods(), folder]) + '/';
+			if (!disabledMods.contains(folder) && !directories.contains(pathThing))
+			{
+				directories.push(pathThing);
+				trace('pushed Directory: ' + folder);
+			}
+		}
+
+		for (i in 0...directories.length)
+		{
+			var path = directories[i] + '/data/options.json';
+			if(!sys.FileSystem.exists(path))
+			{
+				trace(directories[i] + ' doesn\'t have options');
+				continue;
+			}
+			var jsonRaw = sys.io.File.getContent(path);
+			var jsonMods:CustomOptionList = Json.parse(jsonRaw);
+			
+			for (opt in jsonMods.options)
+			{
+				var folderPath = directories[i].split('/');
+				var folderName = folderPath[folderPath.length - 1];
+				
+				var option:Option = new Option(opt.name,
+				opt.description,
+				opt.variable,
+				opt.type,
+				opt.value,
+				opt.options,
+				folderName);
+				addOption(option);
+			}
+		}
+		#end
+
 		super();
 	}
 
@@ -75,4 +142,17 @@ class EngineSubState extends BaseOptionsMenu
 			Main.fpsVar.visible = ClientPrefs.showFPS;
 	}
 	#end
+}
+
+typedef CustomOptions = {
+	name:String,
+	description:String,
+	variable:String,
+	type:String,
+	value:Dynamic,
+	options:Null<Array<String>>,
+}
+
+typedef CustomOptionList = {
+	options:Array<CustomOptions>
 }
