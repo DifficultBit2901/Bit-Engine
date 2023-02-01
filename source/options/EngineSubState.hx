@@ -31,8 +31,8 @@ class EngineSubState extends BaseOptionsMenu
 {
 	public function new()
 	{
-		title = 'Visuals and UI';
-		rpcTitle = 'Visuals & UI Settings Menu'; //for Discord Rich Presence
+		title = 'Engine and Custom';
+		rpcTitle = 'Engine & Custom Settings Menu'; //for Discord Rich Presence
 
 		var option:Option = new Option('Judgement Counter',
 			"Displays a judgement counter if checked",
