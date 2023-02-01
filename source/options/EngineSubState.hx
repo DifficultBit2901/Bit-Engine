@@ -101,7 +101,8 @@ class EngineSubState extends BaseOptionsMenu
 			for (opt in jsonMods.options)
 			{
 				var folderPath = directories[i].split('/');
-				var folderName = folderPath[folderPath.length - 1];
+				var folderName = folderPath[1];
+				trace(folderName);
 				
 				var option:Option = new Option(opt.name,
 				opt.description,

@@ -2625,6 +2625,13 @@ class FunkinLua {
 			luaTrace('Achievements aren\'t allowed on this build', false, false, FlxColor.RED);
 			#end
 		});
+		Lua_helper.add_callback(lua, 'isAchievementUnlocked', function(tag:String){
+			#if ACHIEVEMENTS_ALLOWED
+			return Achievements.isAchievementUnlocked(tag);
+			#else
+			luaTrace('Achievements aren\'t allowed on this build', false, false, FlxColor.RED);
+			#end
+		});
 
 		// DEPRECATED, DONT MESS WITH THESE SHITS, ITS JUST THERE FOR BACKWARD COMPATIBILITY
 		Lua_helper.add_callback(lua, "objectPlayAnimation", function(obj:String, name:String, forced:Bool = false, ?startFrame:Int = 0) {
