@@ -29,6 +29,8 @@ using StringTools;
 
 class OptionsState extends MusicBeatState
 {
+	public static var fromSong:Bool = false;
+
 	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay', 'Engine and Custom'];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
@@ -108,7 +110,12 @@ class OptionsState extends MusicBeatState
 
 		if (controls.BACK) {
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			MusicBeatState.switchState(new MainMenuState());
+			if(fromSong){
+				fromSong = false;
+				MusicBeatState.switchState(new PlayState());
+			}
+			else
+				MusicBeatState.switchState(new MainMenuState());
 		}
 
 		if (controls.ACCEPT) {
