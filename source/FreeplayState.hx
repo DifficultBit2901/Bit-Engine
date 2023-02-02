@@ -462,9 +462,11 @@ class FreeplayState extends MusicBeatState
 		for (i in 0...iconArray.length)
 		{
 			iconArray[i].alpha = 0.6;
+			iconArray[i].animation.play('normal');
 		}
-
+		
 		iconArray[curSelected].alpha = 1;
+		iconArray[curSelected].animation.play('winning');
 
 		for (item in grpSongs.members)
 		{
