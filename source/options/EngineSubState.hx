@@ -111,6 +111,14 @@ class EngineSubState extends BaseOptionsMenu
 				opt.value,
 				opt.options,
 				folderName);
+
+				if(!ClientPrefs.customSettings.exists(folderName))
+					ClientPrefs.customSettings.set(folderName, new Map<String, Dynamic>());
+
+				var map = ClientPrefs.customSettings.get(folderName);
+				if(!map.exists(opt.variable))
+					map.set(opt.variable, opt.value);
+
 				addOption(option);
 			}
 		}
