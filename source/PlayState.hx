@@ -425,6 +425,9 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
+		maxHealth = SONG.maxHealth;
+		health = maxHealth / 2;
+
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 
@@ -1187,7 +1190,7 @@ class PlayState extends MusicBeatState
 		if(ClientPrefs.judgementCounter)
 		{
 			judgementCounter = new FlxText(-5, 0, 0, 'Highest Combo: 0\nSicks: 0\nGoods: 0\nBads: 0\nShits: 0\nMisses: 0\nAverage: 0', 16);
-			judgementCounter.setFormat(Paths.font('vcr.ttf'), 16, 0xFFFFFFFF, LEFT, OUTLINE, 0xFF000000);
+			judgementCounter.setFormat(Paths.font('vcr.ttf'), 24, 0xFFFFFFFF, LEFT, OUTLINE, 0xFF000000);
 			judgementCounter.screenCenter(Y);
 			judgementCounter.y += 60;
 			judgementCounter.borderSize = 2;
@@ -3125,6 +3128,20 @@ class PlayState extends MusicBeatState
 			iconP2.animation.play('normal');
 		}
 
+		if(judgementCounter != null && healthBar != null){
+			var color = true;
+			if(FlxG.save.data.coloredCounter != null)
+				color = FlxG.save.data.coloredCounter;
+			var sickF = new FlxTextFormatMarkerPair(new FlxTextFormat(color ? 0x00F7FF : 0xFFFFFF), '<s>');
+			var goodF = new FlxTextFormatMarkerPair(new FlxTextFormat(color ? 0x00FF22 : 0xFFFFFF), '<g>');
+			var badF = new FlxTextFormatMarkerPair(new FlxTextFormat(color ? 0xFF0000 : 0xFFFFFF), '<b>');
+			var shitF = new FlxTextFormatMarkerPair(new FlxTextFormat(color ? 0x4D4D4D : 0xFFFFFF), '<?>');
+			var missF = new FlxTextFormatMarkerPair(new FlxTextFormat(color ? 0x640000 : 0xFFFFFF), '<m>');
+			var average = songHits > 0 ? Math.round(totalMS / songHits) : 0;
+				
+			judgementCounter.applyMarkup(' Highest Combo: $maxCombo\n <s>Sicks: $sicks<s> \n <g>Goods: $goods<g> \n <b>Bads: $bads<b>\n <?>Shits: $shits<?> \n <m>Misses: $songMisses<m>\n Health: ${CoolUtil.truncateFloat(health, 5)} (${healthBar.percent}%)', [sickF, goodF, badF, shitF, missF]);
+		}
+
 		if (FlxG.keys.anyJustPressed(debugKeysCharacter) && !endingSong && !inCutscene) {
 			persistentUpdate = false;
 			paused = true;
@@ -3369,17 +3386,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
-		if(judgementCounter != null){
-			var sickF = new FlxTextFormatMarkerPair(new FlxTextFormat(0x00F7FF), '<s>');
-			var goodF = new FlxTextFormatMarkerPair(new FlxTextFormat(0x00FF22), '<g>');
-			var badF = new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF0000), '<b>');
-			var shitF = new FlxTextFormatMarkerPair(new FlxTextFormat(0x4D4D4D), '<?>');
-			var missF = new FlxTextFormatMarkerPair(new FlxTextFormat(0x640000), '<m>');
-			var average = songHits > 0 ? Math.round(totalMS / songHits) : 0;
-				
-			judgementCounter.applyMarkup(' Highest Combo: $maxCombo\n <s>Sicks: $sicks<s> \n <g>Goods: $goods<g> \n <b>Bads: $bads<b>\n <?>Shits: $shits<?> \n <m>Misses: $songMisses<m>\n Average: ${average}ms', [sickF, goodF, badF, shitF, missF]);
-		}
-
+		
 		setOnLuas('cameraX', camFollowPos.x);
 		setOnLuas('cameraY', camFollowPos.y);
 		setOnLuas('botPlay', cpuControlled);

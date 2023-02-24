@@ -224,7 +224,8 @@ class ChartingState extends MusicBeatState
 				gfVersion: 'gf',
 				speed: 1,
 				stage: 'stage',
-				validScore: false
+				validScore: false,
+				maxHealth: 2
 			};
 			addSection();
 			PlayState.SONG = _song;
@@ -492,6 +493,10 @@ class ChartingState extends MusicBeatState
 		stepperSpeed.value = _song.speed;
 		stepperSpeed.name = 'song_speed';
 		blockPressWhileTypingOnStepper.push(stepperSpeed);
+		var stepperHealth:FlxUINumericStepper = new FlxUINumericStepper(110, stepperSpeed.y, 0.1, 2, 1, 10, 1);
+		stepperHealth.value = _song.maxHealth;
+		stepperHealth.name = 'song_health';
+		blockPressWhileTypingOnStepper.push(stepperHealth);
 		#if MODS_ALLOWED
 		var directories:Array<String> = [Paths.mods('characters/'), Paths.mods(Paths.currentModDirectory + '/characters/'), Paths.getPreloadPath('characters/')];
 		for(mod in Paths.getGlobalMods())
@@ -621,12 +626,14 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(loadEventJson);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
+		tab_group_song.add(stepperHealth);
 		tab_group_song.add(reloadNotesButton);
 		tab_group_song.add(noteSkinInputText);
 		tab_group_song.add(noteSplashesInputText);
 		tab_group_song.add(new FlxText(stepperBPM.x, stepperBPM.y - 15, 0, 'Song BPM:'));
 		tab_group_song.add(new FlxText(stepperBPM.x + 100, stepperBPM.y - 15, 0, 'Song Offset:'));
 		tab_group_song.add(new FlxText(stepperSpeed.x, stepperSpeed.y - 15, 0, 'Song Speed:'));
+		tab_group_song.add(new FlxText(stepperHealth.x, stepperHealth.y - 15, 0, 'Max Health:'));
 		tab_group_song.add(new FlxText(player2DropDown.x, player2DropDown.y - 15, 0, 'Opponent:'));
 		tab_group_song.add(new FlxText(gfVersionDropDown.x, gfVersionDropDown.y - 15, 0, 'Girlfriend:'));
 		tab_group_song.add(new FlxText(player1DropDown.x, player1DropDown.y - 15, 0, 'Boyfriend:'));
@@ -1438,6 +1445,10 @@ class ChartingState extends MusicBeatState
 			else if (wname == 'song_speed')
 			{
 				_song.speed = nums.value;
+			}
+			else if (wname == 'song_health')
+			{
+				_song.maxHealth = nums.value;
 			}
 			else if (wname == 'song_bpm')
 			{

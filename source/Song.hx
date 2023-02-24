@@ -29,6 +29,8 @@ typedef SwagSong =
 	var arrowSkin:String;
 	var splashSkin:String;
 	var validScore:Bool;
+
+	var maxHealth:Null<Float>;
 }
 
 class Song
@@ -139,6 +141,8 @@ class Song
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
+		if(swagShit.maxHealth == null)
+			swagShit.maxHealth = 2;
 		return swagShit;
 	}
 }

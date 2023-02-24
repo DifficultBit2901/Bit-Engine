@@ -40,6 +40,12 @@ class EngineSubState extends BaseOptionsMenu
 			'bool',
 			true);
 		addOption(option);
+		var option:Option = new Option('Colored Judgement Counter',
+			"If unchecked the judgment counter will be completely white",
+			'coloredCounter',
+			'bool',
+			true);
+		addOption(option);
 
 		#if MODS_ALLOWED
 		var disabledMods:Array<String> = [];
