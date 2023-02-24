@@ -297,6 +297,10 @@ class PlayState extends MusicBeatState
 	public var opponentCameraOffset:Array<Float> = null;
 	public var girlfriendCameraOffset:Array<Float> = null;
 
+	public var isStageFlipped:Bool = false;
+
+	public var maxHealth:Float = 2;
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -486,9 +490,13 @@ class PlayState extends MusicBeatState
 				camera_boyfriend: [0, 0],
 				camera_opponent: [0, 0],
 				camera_girlfriend: [0, 0],
-				camera_speed: 1
+				camera_speed: 1,
+
+				flip_stage: false
 			};
 		}
+
+		isStageFlipped = stageData.flip_stage == null ? false : stageData.flip_stage;
 
 		defaultCamZoom = stageData.defaultZoom;
 		isPixelStage = stageData.isPixelStage;
@@ -1137,8 +1145,8 @@ class PlayState extends MusicBeatState
 		add(healthBarBG);
 		if(ClientPrefs.downScroll) healthBarBG.y = 0.11 * FlxG.height;
 
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, 2);
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, isStageFlipped ? LEFT_TO_RIGHT : RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+			'health', 0, maxHealth);
 		healthBar.scrollFactor.set();
 		// healthBar
 		healthBar.visible = !ClientPrefs.hideHud;
@@ -3084,13 +3092,25 @@ class PlayState extends MusicBeatState
 
 		var iconOffset:Int = 26;
 
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
+		if(isStageFlipped)
+		{
+			iconP2.x = healthBar.x + (healthBar.width * (healthBar.percent * 0.01)) + (150 * iconP2.scale.x - 150) / 2 - iconOffset;
+			iconP1.x = healthBar.x + (healthBar.width * (healthBar.percent * 0.01)) - (150 * iconP1.scale.x) / 2 - iconOffset * 2;
+		}
+		else
+		{
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
+			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
+		}
 
-		if (health > 2)
-			health = 2;
+		iconP1.flipX = iconP2.flipX = isStageFlipped;
+		
 
+		if (health > maxHealth)
+			health = maxHealth;
 
+		if(health < 0)
+			health = 0;
 
 		if (healthBar.percent < 20) {
 			iconP1.animation.play('losing');
@@ -5389,3 +5409,4 @@ class PlayState extends MusicBeatState
 	var curLight:Int = -1;
 	var curLightEvent:Int = -1;
 }
+
