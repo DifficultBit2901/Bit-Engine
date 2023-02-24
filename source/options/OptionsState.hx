@@ -31,6 +31,9 @@ class OptionsState extends MusicBeatState
 {
 	public static var fromSong:Bool = false;
 
+	/**
+	 * a list of all things that appear as options that can be selected
+	 */
 	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay', 'Engine and Custom'];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;

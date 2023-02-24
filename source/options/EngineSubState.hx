@@ -41,13 +41,6 @@ class EngineSubState extends BaseOptionsMenu
 			true);
 		addOption(option);
 
-        var option:Option = new Option('Movement',
-        "Makes BF move and stretch when buttons are pressed",
-        'movement',
-        'bool',
-        false);
-        addOption(option);
-
 		#if MODS_ALLOWED
 		var disabledMods:Array<String> = [];
 		var modsListPath:String = 'modsList.txt';

@@ -14,11 +14,11 @@ To install LuaJIT do this: `haxelib git linc_luajit https://github.com/nebulazor
 
 If you get an error about StatePointer when using Lua, run `haxelib remove linc_luajit` into Command Prompt/PowerShell, then re-install linc_luajit.
 
-If you want video support on your mod, simply do `haxelib install hxCodec` on a Command prompt/PowerShell (Suggested Version: 2.6.1)
+If you want video support on your mod, simply do `haxelib install hxCodec` on a Command prompt/PowerShell (Suggested Version: 1.60.0)
 
 otherwise, you can delete the "VIDEOS_ALLOWED" Line on Project.xml
 
-Suggested version for flixel-addons: 3.0.2
+Suggested version for flixel-addons: 2.12.0
 
 ## Credits:
 
@@ -48,7 +48,7 @@ _____________________________________
 * You can create json files for achievements
 * You can grant achievements using lua
 
-## Json Options
+## Lua/Json Options
 * You can create json files for adding options
 * Custom options appear in the "Engine and Custom" section of the options menu
 * You can give the options logic using lua
