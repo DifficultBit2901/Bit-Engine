@@ -1066,7 +1066,20 @@ class PlayState extends MusicBeatState
 		}
 		updateTime = showTime;
 
-		timeBarBG = new AttachedSprite('timeBar');
+		var timeBGName = 'timeBar';
+		switch(ClientPrefs.timeBarStyle)
+		{
+			case 'Kade Engine':
+				timeBGName = 'healthBar';
+			case 'Dave Engine':
+				timeBGName = 'timerBarDave';
+			case 'Extreme Engine':
+				timeBGName = 'timeBarExtreme';
+			case 'Leather Engine':
+				timeBGName = 'healthBar';
+		}
+
+		timeBarBG = new AttachedSprite(timeBGName);
 		timeBarBG.x = timeTxt.x;
 		timeBarBG.y = timeTxt.y + (timeTxt.height / 4);
 		timeBarBG.scrollFactor.set();
@@ -1075,16 +1088,27 @@ class PlayState extends MusicBeatState
 		timeBarBG.color = FlxColor.BLACK;
 		timeBarBG.xAdd = -4;
 		timeBarBG.yAdd = -4;
-		add(timeBarBG);
-
+		timeBarBG.screenCenter(X);
+		
 		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
-			'songPercent', 0, 1);
+		'songPercent', 0, 1);
 		timeBar.scrollFactor.set();
 		timeBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
 		timeBar.numDivisions = 800; //How much lag this causes?? Should i tone it down to idk, 400 or 200?
 		timeBar.alpha = 0;
 		timeBar.visible = showTime;
-		add(timeBar);
+
+		if(['Dave Engine', 'Extreme Engine'].contains(ClientPrefs.timeBarStyle))
+		{
+			add(timeBar);
+			add(timeBarBG);
+		}
+		else
+		{
+			add(timeBarBG);
+			add(timeBar);
+		}
+
 		add(timeTxt);
 		timeBarBG.sprTracker = timeBar;
 
@@ -1169,6 +1193,7 @@ class PlayState extends MusicBeatState
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
 		reloadHealthBarColors();
+		reloadTimeBarColors();
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -1548,6 +1573,32 @@ class PlayState extends MusicBeatState
 			FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]));
 
 		healthBar.updateBar();
+	}
+	var timeBarHue:Float = 0;
+	public function reloadTimeBarColors() {
+		var color = 0xFFFFFFFF;
+		var empty = 0xFF000000;
+		switch(ClientPrefs.timeBarStyle)
+		{
+			case 'Kade Engine' | 'Dave Engine':
+				color = 0xFF01F029;
+			case 'Leather Engine':
+				color = 0xFF00FFFF;
+			case 'Extreme Engine' | 'Opponent Color':
+				color = FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]);
+			case 'Difficult Engine':
+				color = FlxColor.fromHSB(timeBarHue, 1, 1);
+		}
+		switch(ClientPrefs.timeBarStyle)
+		{
+			case 'Kade Engine':
+				empty = 0x00FFFFFF;
+			case 'Extreme Engine' | 'Dave Engine':
+				empty = 0xFF333333;
+		}
+		
+		timeBar.createFilledBar(empty, color);
+		// timeBar.updateBar();
 	}
 
 	public function addCharacterToList(newCharacter:String, type:Int) {
@@ -2915,6 +2966,9 @@ class PlayState extends MusicBeatState
 		}*/
 		callOnLuas('onUpdate', [elapsed]);
 
+		timeBarHue += elapsed * Math.pow(Conductor.bpm, 2) / 100;
+		if(dad != null)
+			reloadTimeBarColors();
 
 		switch (curStage)
 		{

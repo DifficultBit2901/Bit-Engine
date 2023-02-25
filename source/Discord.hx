@@ -45,7 +45,7 @@ class DiscordClient
 			details: "In the Menus",
 			state: null,
 			largeImageKey: 'icon',
-			largeImageText: "Bit Engine"
+			largeImageText: "Difficult Engine"
 		});
 	}
 

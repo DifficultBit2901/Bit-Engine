@@ -66,6 +66,7 @@ class ClientPrefs {
 	//New stuff
 	public static var judgementCounter:Bool = true;
 	public static var coloredCounter:Bool = true;
+	public static var timeBarStyle:String = 'Difficult Engine';
 
 	//Every key has two binds, add your key bind down here and then add your control on options/ControlsSubState.hx and Controls.hx
 	public static var keyBinds:Map<String, Array<FlxKey>> = [
@@ -141,6 +142,7 @@ class ClientPrefs {
 		//New stuff
 		FlxG.save.data.judgementCounter = judgementCounter;
 		FlxG.save.data.coloredCounter = coloredCounter;
+		FlxG.save.data.timeBarStyle = timeBarStyle;
 	
 		FlxG.save.flush();
 
@@ -259,6 +261,8 @@ class ClientPrefs {
 			judgementCounter = FlxG.save.data.judgementCounter;
 		if(FlxG.save.data.coloredCounter != null)
 			coloredCounter = FlxG.save.data.coloredCounter;
+		if(FlxG.save.data.timeBarStyle != null)
+			timeBarStyle = FlxG.save.data.timeBarStyle;
 
 		if(FlxG.save.data.gameplaySettings != null)
 		{

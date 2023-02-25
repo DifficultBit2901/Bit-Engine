@@ -46,6 +46,13 @@ class EngineSubState extends BaseOptionsMenu
 			'bool',
 			true);
 		addOption(option);
+		var option:Option = new Option('Time Bar Style:',
+			"Changes the style of the time bar (only works if timebar is enabled)",
+			'timeBarStyle',
+			'string',
+			'Difficult Engine',
+			['Difficult Engine', 'Psych Engine', 'Kade Engine', 'Leather Engine', 'Dave Engine', 'Extreme Engine', 'Opponent Color']);
+		addOption(option);
 
 		#if MODS_ALLOWED
 		var disabledMods:Array<String> = [];

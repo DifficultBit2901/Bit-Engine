@@ -1,6 +1,6 @@
-# Friday Night Funkin' - Bit Engine
+# Friday Night Funkin' - Difficult Engine
 Engine powered by Psych Engine, which was originally used on [Mind Games Mod](https://gamebanana.com/mods/301107) and intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.
-Bit Engine adds a few little things for soft-coded mods using the mods folder.
+Difficult Engine adds a few little things for soft-coded mods using the mods folder.
 
 ## Installation:
 You must have [the most up-to-date version of Haxe](https://haxe.org/download/), seriously, stop using 4.1.5, it misses some stuff.
@@ -22,7 +22,7 @@ Suggested version for flixel-addons: 2.12.0
 
 ## Credits:
 
-### Bit Engine Team
+### Difficult Engine Team
 * DifficultBit2901 - Programmer
 
 ### Psych Engine Team
@@ -64,3 +64,7 @@ _____________________________________
 ## Lua Backdrops
 * Added FlxBackdrops (infinitely scrolling backgrounds) to lua
 * They work similar to Sprites or texts
+
+## Engine Customization
+* Change the style for the time bar
+* Enable/Disable judgment counter colors
