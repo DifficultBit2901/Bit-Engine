@@ -54,6 +54,8 @@ class FreeplayState extends MusicBeatState
 	{
 		//Paths.clearStoredMemory();
 		//Paths.clearUnusedMemory();
+		PlayState.flippedForOpponentMode = false;
+		trace('flipped to false');
 		
 		persistentUpdate = true;
 		PlayState.isStoryMode = false;

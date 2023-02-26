@@ -174,6 +174,7 @@ class FunkinLua {
 		set('instakillOnMiss', PlayState.instance.instakillOnMiss);
 		set('botPlay', PlayState.instance.cpuControlled);
 		set('practice', PlayState.instance.practiceMode);
+		set('opponentMode', PlayState.instance.opponentMode);
 
 		for (i in 0...4) {
 			set('defaultPlayerStrumX' + i, 0);
@@ -982,6 +983,19 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "getProperty", function(variable:String) {
 			var result:Dynamic = null;
 			var killMe:Array<String> = variable.split('.');
+			if(PlayState.instance.opponentMode)
+			{
+				switch(killMe[0]){
+					case 'dad':
+						killMe[0] = 'boyfriend';
+					case 'dadGroup':
+						killMe[0] = 'boyfriendGroup';
+					case 'boyfriend':
+						killMe[0] = 'dad';
+					case 'boyfriendGroup':
+						killMe[0] = 'dadGroup';
+				}
+			}
 			if(killMe.length > 1)
 				result = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
 			else
@@ -992,6 +1006,19 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "setProperty", function(variable:String, value:Dynamic) {
 			var killMe:Array<String> = variable.split('.');
+			if(PlayState.instance.opponentMode)
+			{
+				switch(killMe[0]){
+					case 'dad':
+						killMe[0] = 'boyfriend';
+					case 'dadGroup':
+						killMe[0] = 'boyfriendGroup';
+					case 'boyfriend':
+						killMe[0] = 'dad';
+					case 'boyfriendGroup':
+						killMe[0] = 'dadGroup';
+				}
+			}
 			if(killMe.length > 1) {
 				setVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1], value);
 				return true;

@@ -51,6 +51,8 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		PlayState.flippedForOpponentMode = false;
+		trace('flipped to false');
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
