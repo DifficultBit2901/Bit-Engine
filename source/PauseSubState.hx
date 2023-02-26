@@ -203,6 +203,8 @@ class PauseSubState extends MusicBeatSubstate
 					FlxG.sound.music.volume = 0;
 					PlayState.changedDifficulty = true;
 					PlayState.chartingMode = false;
+					PlayState.flippedForOpponentMode = false;
+					trace('flipped to false');
 					return;
 				}
 

@@ -2595,7 +2595,7 @@ class PlayState extends MusicBeatState
 
 		for (section in noteData)
 		{
-			trace('flipped: ' + flippedForOpponentMode);
+			// trace('flipped: ' + flippedForOpponentMode);
 			if(opponentMode && !flippedForOpponentMode)
 				section.mustHitSection = !section.mustHitSection;
 
@@ -2712,16 +2712,18 @@ class PlayState extends MusicBeatState
 	function eventPushed(event:EventNote) {
 		switch(event.event) {
 			case 'Change Character':
-				var charType:Int = opponentMode ? 1 : 0;
-				switch(event.value1.toLowerCase()) {
-					case 'gf' | 'girlfriend' | '2':
+				var charType:Int = 0;
+				switch(event.value1.toLowerCase().trim()) {
+					case 'gf' | 'girlfriend':
 						charType = 2;
-					case 'dad' | 'opponent' | '1':
-						charType = !opponentMode ? 1 : 0;
+					case 'dad' | 'opponent':
+						charType = 1;
 					default:
 						charType = Std.parseInt(event.value1);
-						if(Math.isNaN(charType)) charType = opponentMode ? 1 : 0;
+						if(Math.isNaN(charType)) charType = 0;
 				}
+				if(charType < 2 && opponentMode)
+					charType = 1 - charType;
 
 				var newCharacter:String = event.value2;
 				addCharacterToList(newCharacter, charType);
@@ -3865,17 +3867,19 @@ class PlayState extends MusicBeatState
 
 
 			case 'Change Character':
-				var charType:Int = opponentMode ? 1 : 0;
+				var charType:Int = 0;
 				switch(value1.toLowerCase().trim()) {
 					case 'gf' | 'girlfriend':
 						charType = 2;
 					case 'dad' | 'opponent':
-						charType = opponentMode ? 0 : 1;
+						charType = 1;
 					default:
 						charType = Std.parseInt(value1);
-						if(Math.isNaN(charType)) charType = opponentMode ? 1 : 0;
+						if(Math.isNaN(charType)) charType = 0;
 				}
-
+				if(charType < 2 && opponentMode)
+					charType = 1 - charType;
+				trace('$value1 => $charType');
 				switch(charType) {
 					case 0:
 						if(boyfriend.curCharacter != value2) {
@@ -3888,8 +3892,10 @@ class PlayState extends MusicBeatState
 							boyfriend.alpha = 0.00001;
 							boyfriend = boyfriendMap.get(value2);
 							boyfriend.alpha = lastAlpha;
-							boyfriend.flipX = lastFlip[0];
-							boyfriend.flipY = lastFlip[1];
+							// boyfriend.flipX = lastFlip[0];
+							// boyfriend.flipY = lastFlip[1];
+							if(opponentMode)
+								boyfriend.flipX = !boyfriend.flipX;
 							iconP1.changeIcon(boyfriend.healthIcon);
 							if(bfTrail != null){
 								remove(bfTrail);
@@ -3908,6 +3914,7 @@ class PlayState extends MusicBeatState
 
 							var wasGf:Bool = dad.curCharacter.startsWith('gf');
 							var lastAlpha:Float = dad.alpha;
+							var lastFlip = [dad.flipX, dad.flipY];
 							dad.alpha = 0.00001;
 							dad = dadMap.get(value2);
 							if(!dad.curCharacter.startsWith('gf')) {
@@ -3918,6 +3925,10 @@ class PlayState extends MusicBeatState
 								gf.visible = false;
 							}
 							dad.alpha = lastAlpha;
+							// dad.flipX = lastFlip[0];
+							// dad.flipY = lastFlip[1];
+							if(opponentMode)
+								dad.flipX = !dad.flipX;
 							iconP2.changeIcon(dad.healthIcon);
 							if(dadTrail != null)
 							{
