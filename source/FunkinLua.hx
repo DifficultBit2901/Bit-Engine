@@ -192,8 +192,8 @@ class FunkinLua {
 		set('defaultGirlfriendY', PlayState.instance.GF_Y);
 
 		// Character shit
-		set('boyfriendName', PlayState.SONG.player1);
-		set('dadName', PlayState.SONG.player2);
+		set(!PlayState.instance.opponentMode ? 'boyfriendName' : 'dadName', PlayState.SONG.player1);
+		set(PlayState.instance.opponentMode ? 'boyfriendName' : 'dadName', PlayState.SONG.player2);
 		set('gfName', PlayState.SONG.gfVersion);
 
 		// Some settings, no jokes
@@ -1564,6 +1564,8 @@ class FunkinLua {
 				case 'dad': charType = 1;
 				case 'gf' | 'girlfriend': charType = 2;
 			}
+			if(charType < 2 && PlayState.instance.opponentMode)
+				charType = 1 - charType;
 			PlayState.instance.addCharacterToList(name, charType);
 		});
 		Lua_helper.add_callback(lua, "precacheImage", function(name:String) {
@@ -1628,47 +1630,51 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "getCharacterX", function(type:String) {
 			switch(type.toLowerCase()) {
 				case 'dad' | 'opponent':
-					return PlayState.instance.dadGroup.x;
+					return PlayState.instance.opponentMode ? PlayState.instance.boyfriendGroup.x : PlayState.instance.dadGroup.x;
 				case 'gf' | 'girlfriend':
 					return PlayState.instance.gfGroup.x;
 				default:
-					return PlayState.instance.boyfriendGroup.x;
+					return !PlayState.instance.opponentMode ? PlayState.instance.boyfriendGroup.x : PlayState.instance.dadGroup.x;
 			}
 		});
 		Lua_helper.add_callback(lua, "setCharacterX", function(type:String, value:Float) {
+			var dadTarget = PlayState.instance.opponentMode ? PlayState.instance.boyfriendGroup : PlayState.instance.dadGroup;
+			var bfTarget = !PlayState.instance.opponentMode ? PlayState.instance.boyfriendGroup : PlayState.instance.dadGroup;
 			switch(type.toLowerCase()) {
 				case 'dad' | 'opponent':
-					PlayState.instance.dadGroup.x = value;
+					dadTarget.x = value;
 				case 'gf' | 'girlfriend':
 					PlayState.instance.gfGroup.x = value;
 				default:
-					PlayState.instance.boyfriendGroup.x = value;
+					bfTarget.x = value;
 			}
 		});
 		Lua_helper.add_callback(lua, "getCharacterY", function(type:String) {
 			switch(type.toLowerCase()) {
 				case 'dad' | 'opponent':
-					return PlayState.instance.dadGroup.y;
+					return PlayState.instance.opponentMode ? PlayState.instance.boyfriendGroup.y : PlayState.instance.dadGroup.y;
 				case 'gf' | 'girlfriend':
 					return PlayState.instance.gfGroup.y;
 				default:
-					return PlayState.instance.boyfriendGroup.y;
+					return !PlayState.instance.opponentMode ? PlayState.instance.boyfriendGroup.y : PlayState.instance.dadGroup.y;
 			}
 		});
 		Lua_helper.add_callback(lua, "setCharacterY", function(type:String, value:Float) {
+			var dadTarget = PlayState.instance.opponentMode ? PlayState.instance.boyfriendGroup : PlayState.instance.dadGroup;
+			var bfTarget = !PlayState.instance.opponentMode ? PlayState.instance.boyfriendGroup : PlayState.instance.dadGroup;
 			switch(type.toLowerCase()) {
 				case 'dad' | 'opponent':
-					PlayState.instance.dadGroup.y = value;
+					dadTarget.y = value;
 				case 'gf' | 'girlfriend':
 					PlayState.instance.gfGroup.y = value;
 				default:
-					PlayState.instance.boyfriendGroup.y = value;
+					bfTarget.y = value;
 			}
 		});
 		Lua_helper.add_callback(lua, "cameraSetTarget", function(target:String) {
-			var isDad:Bool = false;
+			var isDad:Bool = PlayState.instance.opponentMode;
 			if(target == 'dad') {
-				isDad = true;
+				isDad = !PlayState.instance.opponentMode;
 			}
 			PlayState.instance.moveCamera(isDad);
 			return isDad;
@@ -1766,10 +1772,12 @@ class FunkinLua {
 			return 0;
 		});
 		Lua_helper.add_callback(lua, "characterDance", function(character:String) {
+			var dadTarget = PlayState.instance.opponentMode ? PlayState.instance.boyfriend : PlayState.instance.dad;
+			var bfTarget = !PlayState.instance.opponentMode ? PlayState.instance.boyfriend : PlayState.instance.dad;
 			switch(character.toLowerCase()) {
-				case 'dad': PlayState.instance.dad.dance();
+				case 'dad': dadTarget.dance();
 				case 'gf' | 'girlfriend': if(PlayState.instance.gf != null) PlayState.instance.gf.dance();
-				default: PlayState.instance.boyfriend.dance();
+				default: bfTarget.dance();
 			}
 		});
 
@@ -1858,6 +1866,13 @@ class FunkinLua {
 
 		Lua_helper.add_callback(lua, "playAnim", function(obj:String, name:String, forced:Bool = false, ?reverse:Bool = false, ?startFrame:Int = 0)
 		{
+			if(PlayState.instance.opponentMode)
+			{
+				if(obj == 'dad')
+					obj = 'boyfriend';
+				else if(obj == 'boyfriend')
+					obj = 'dad';
+			}
 			if(PlayState.instance.getLuaObject(obj, false) != null) {
 				var luaObj:FlxSprite = PlayState.instance.getLuaObject(obj,false);
 				if(luaObj.animation.getByName(name) != null)
@@ -2749,16 +2764,18 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "characterPlayAnim", function(character:String, anim:String, ?forced:Bool = false) {
 			luaTrace("characterPlayAnim is deprecated! Use playAnim instead", false, true);
+			var dadTarget = PlayState.instance.opponentMode ? PlayState.instance.boyfriend : PlayState.instance.dad;
+			var bfTarget = !PlayState.instance.opponentMode ? PlayState.instance.boyfriend : PlayState.instance.dad;
 			switch(character.toLowerCase()) {
 				case 'dad':
-					if(PlayState.instance.dad.animOffsets.exists(anim))
-						PlayState.instance.dad.playAnim(anim, forced);
+					if(dadTarget.animOffsets.exists(anim))
+						dadTarget.playAnim(anim, forced);
 				case 'gf' | 'girlfriend':
 					if(PlayState.instance.gf != null && PlayState.instance.gf.animOffsets.exists(anim))
 						PlayState.instance.gf.playAnim(anim, forced);
-				default:
-					if(PlayState.instance.boyfriend.animOffsets.exists(anim))
-						PlayState.instance.boyfriend.playAnim(anim, forced);
+				default: 
+					if(bfTarget.animOffsets.exists(anim))
+						bfTarget.playAnim(anim, forced);
 			}
 		});
 		Lua_helper.add_callback(lua, "luaSpriteMakeGraphic", function(tag:String, width:Int, height:Int, color:String) {

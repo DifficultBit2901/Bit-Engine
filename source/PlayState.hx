@@ -888,8 +888,17 @@ class PlayState extends MusicBeatState
 		if (curStage == 'limo')
 			add(limo);
 
-		add(dadGroup);
-		add(boyfriendGroup);
+		if(opponentMode)
+		{
+			add(boyfriendGroup);
+			add(dadGroup);
+		}
+		else
+		{
+			add(dadGroup);
+			add(boyfriendGroup);
+		}
+		
 
 		switch(curStage)
 		{
@@ -1036,6 +1045,10 @@ class PlayState extends MusicBeatState
 
 		if(dad.curCharacter.startsWith('gf')) {
 			dad.setPosition(GF_X, GF_Y);
+			if(gf != null)
+				gf.visible = false;
+		} else if(boyfriend.curCharacter.startsWith('gf')) {
+			boyfriend.setPosition(GF_X, GF_Y);
 			if(gf != null)
 				gf.visible = false;
 		}
@@ -4105,10 +4118,10 @@ class PlayState extends MusicBeatState
 				}
 
 			case 'Hey!':
-				var value:Int = opponentMode ? 0 : 2;
+				var value:Int = 2;
 				switch(value1.toLowerCase().trim()) {
 					case 'bf' | 'boyfriend' | '0':
-						value = opponentMode ? 1 : 0;
+						value = 0;
 					case 'gf' | 'girlfriend' | '1':
 						value = 1;
 				}
@@ -4116,11 +4129,14 @@ class PlayState extends MusicBeatState
 				var time:Float = Std.parseFloat(value2);
 				if(Math.isNaN(time) || time <= 0) time = 0.6;
 
+				var bfTarget = opponentMode ? dad : boyfriend;
+				var dadTarget = !opponentMode ? dad : boyfriend;
+
 				if(value != 0) {
-					if(dad.curCharacter.startsWith('gf')) { //Tutorial GF is actually Dad! The GF is an imposter!! ding ding ding ding ding ding ding, dindinding, end my suffering
-						dad.playAnim('cheer', true);
-						dad.specialAnim = true;
-						dad.heyTimer = time;
+					if(dadTarget.curCharacter.startsWith('gf')) { //Tutorial GF is actually Dad! The GF is an imposter!! ding ding ding ding ding ding ding, dindinding, end my suffering
+						dadTarget.playAnim('cheer', true);
+						dadTarget.specialAnim = true;
+						dadTarget.heyTimer = time;
 					} else if (gf != null) {
 						gf.playAnim('cheer', true);
 						gf.specialAnim = true;
@@ -4133,9 +4149,9 @@ class PlayState extends MusicBeatState
 					}
 				}
 				if(value != 1) {
-					boyfriend.playAnim('hey', true);
-					boyfriend.specialAnim = true;
-					boyfriend.heyTimer = time;
+					bfTarget.playAnim('hey', true);
+					bfTarget.specialAnim = true;
+					bfTarget.heyTimer = time;
 				}
 
 			case 'Set GF Speed':
@@ -4364,8 +4380,18 @@ class PlayState extends MusicBeatState
 								addCharacterToList(value2, charType);
 							}
 
-							var lastAlpha:Float = boyfriend.alpha;
-							var lastFlip = [boyfriend.flipX, boyfriend.flipY];
+							var wasGf:Bool = boyfriend.curCharacter.startsWith('gf');
+							var lastAlpha:Float = 1;
+							lastAlpha = boyfriend.alpha;
+							boyfriend.alpha = 0.00001;
+							boyfriend = boyfriendMap.get(value2);
+							if(!boyfriend.curCharacter.startsWith('gf')) {
+								if(wasGf && gf != null) {
+									gf.visible = true;
+								}
+							} else if(gf != null) {
+								gf.visible = false;
+							}
 							boyfriend.alpha = 0.00001;
 							boyfriend = boyfriendMap.get(value2);
 							boyfriend.alpha = lastAlpha;
@@ -4381,8 +4407,7 @@ class PlayState extends MusicBeatState
 								insert(members.indexOf(gfGroup), bfTrail);
 							}
 						}
-						setOnLuas('boyfriendName', boyfriend.curCharacter);
-
+						setOnLuas(!opponentMode ? 'boyfriendName' : 'dadName', boyfriend.curCharacter);
 					case 1:
 						if(dad.curCharacter != value2) {
 							if(!dadMap.exists(value2)) {
@@ -4415,8 +4440,7 @@ class PlayState extends MusicBeatState
 								insert(members.indexOf(gfGroup), dadTrail);
 							}
 						}
-						setOnLuas('dadName', dad.curCharacter);
-
+						setOnLuas(opponentMode ? 'boyfriendName' : 'dadName', boyfriend.curCharacter);
 					case 2:
 						if(gf != null)
 						{
