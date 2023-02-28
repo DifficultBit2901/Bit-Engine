@@ -3523,6 +3523,11 @@ class PlayState extends MusicBeatState
 
 	function openChartEditor()
 	{
+		if(opponentMode)
+		{
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			return;
+		}
 		persistentUpdate = false;
 		paused = true;
 		cancelMusicFadeTween();
