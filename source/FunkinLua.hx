@@ -1,5 +1,6 @@
 package;
 
+import openfl.filters.ShaderFilter;
 import flixel.addons.display.FlxBackdrop;
 import openfl.display.BitmapData;
 #if LUA_ALLOWED
@@ -8,6 +9,8 @@ import llua.LuaL;
 import llua.State;
 import llua.Convert;
 #end
+
+import Shaders;
 
 import animateatlas.AtlasFrameMaker;
 import flixel.FlxG;
@@ -1145,7 +1148,225 @@ class FunkinLua {
 			}
 			luaTrace("setObjectOrder: Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
 		});
-
+		
+		// Shaders lol
+		Lua_helper.add_callback(lua, 'clearCameraShaders', function(camera:String){
+			PlayState.instance.clearCameraShaders(camera);
+		});
+		Lua_helper.add_callback(lua, "addChromaticShader", function(obj:String, offset:Float=0.0) {
+			if(obj.startsWith('cam'))
+				{
+					PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new ChromaticAberrationEffect(offset).shader));
+					return;
+				}
+			var killMe:Array<String> = obj.split('.');
+				var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+				if(killMe.length > 1) {
+					leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+				}
+				if(leObj == null) {
+					luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+					return;
+				}
+				leObj.shader = new ChromaticAberrationEffect(offset).shader;
+			});
+		Lua_helper.add_callback(lua, "addScanlineShader", function(obj:String) {
+			if(obj.startsWith('cam'))
+				{
+					PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new ScanlineEffect(true).shader));
+					return;
+				}
+			var killMe:Array<String> = obj.split('.');
+				var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+				if(killMe.length > 1) {
+					leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+				}
+				if(leObj == null) {
+					luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+					return;
+				}
+				leObj.shader = new ScanlineEffect(true).shader;
+			});
+		Lua_helper.add_callback(lua, "addTiltshiftShader", function(obj:String, blurAmount:Float, center:Float) {
+			if(obj.startsWith('cam'))
+				{
+					PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new TiltshiftEffect(blurAmount, center).shader));
+					return;
+				}
+			var killMe:Array<String> = obj.split('.');
+				var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+				if(killMe.length > 1) {
+					leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+				}
+				if(leObj == null) {
+					luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+					return;
+				}
+				leObj.shader = new TiltshiftEffect(blurAmount, center).shader;
+			});
+		Lua_helper.add_callback(lua, "addMonochromeShader", function(obj:String) {
+			if(obj.startsWith('cam'))
+			{
+				PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new GreyscaleEffect().shader));
+				return;
+			}
+			var killMe:Array<String> = obj.split('.');
+				var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+				if(killMe.length > 1) {
+					leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+				}
+				if(leObj == null) {
+					luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+					return;
+				}
+				leObj.shader = new GreyscaleEffect().shader;
+			});
+		Lua_helper.add_callback(lua, "addGrainShader", function(obj:String, grainsize:Float, lumamount:Float) {
+			if(obj.startsWith('cam'))
+				{
+					PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new GrainEffect(grainsize, lumamount, true).shader));
+					return;
+				}
+			var killMe:Array<String> = obj.split('.');
+				var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+				if(killMe.length > 1) {
+					leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+				}
+				if(leObj == null) {
+					luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+					return;
+				}
+				leObj.shader = new GrainEffect(grainsize, lumamount, true).shader;
+		});	
+		Lua_helper.add_callback(lua, "addVCRShader", function(obj:String, glitchFactor:Float, distortion:Bool = true, perspectiveOn:Bool = true, vignetteMoving:Bool = true) {
+			if(obj.startsWith('cam')){
+				PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new VCRDistortionEffect(glitchFactor, distortion, perspectiveOn, vignetteMoving).shader));
+				return;
+			}
+			var killMe:Array<String> = obj.split('.');
+			var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+			if(killMe.length > 1) {
+				leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			}
+			if(leObj == null) {
+				luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+				return;
+			}
+			leObj.shader = new VCRDistortionEffect(glitchFactor, distortion, perspectiveOn, vignetteMoving).shader;
+		});	
+		Lua_helper.add_callback(lua, "add3DShader", function(obj:String,xrotation:Float = 0, yrotation:Float = 0, zrotation:Float = 0, depth:Float = 0) {
+			if(obj.startsWith('cam')){
+				PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new ThreeDEffect(xrotation, yrotation, zrotation, depth).shader));
+				return;
+			}
+			var killMe:Array<String> = obj.split('.');
+			var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+			if(killMe.length > 1) {
+				leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			}
+			if(leObj == null) {
+				luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+				return;
+			}
+			leObj.shader = new ThreeDEffect(xrotation, yrotation, zrotation, depth).shader;
+		});	
+		Lua_helper.add_callback(lua, "addBloomShader", function(obj:String,blurSize:Float = 0, intensity:Float = 0) {
+			if(obj.startsWith('cam')){
+				PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new BloomEffect(blurSize, intensity).shader));
+				return;
+			}
+			var killMe:Array<String> = obj.split('.');
+			var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+			if(killMe.length > 1) {
+				leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			}
+			if(leObj == null) {
+				luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+				return;
+			}
+			leObj.shader = new BloomEffect(blurSize, intensity).shader;
+		});	
+		Lua_helper.add_callback(lua, "addGlitchShader", function(obj:String,speed:Float = 0, frequency:Float = 0, amplitude:Float = 0) {
+			if(obj.startsWith('cam')){
+				PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new GlitchEffect(speed, frequency, amplitude).shader));
+				return;
+			}
+			var killMe:Array<String> = obj.split('.');
+			var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+			if(killMe.length > 1) {
+				leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			}
+			if(leObj == null) {
+				luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+				return;
+			}
+			leObj.shader = new GlitchEffect(speed, frequency, amplitude).shader;
+		});	
+		Lua_helper.add_callback(lua, "addDistortionShader", function(obj:String,speed:Float = 0, frequency:Float = 0, amplitude:Float = 0) {
+			if(obj.startsWith('cam')){
+				PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new DistortBGEffect(speed, frequency, amplitude).shader));
+				return;
+			}
+			var killMe:Array<String> = obj.split('.');
+			var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+			if(killMe.length > 1) {
+				leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			}
+			if(leObj == null) {
+				luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+				return;
+			}
+			leObj.shader = new DistortBGEffect(speed, frequency, amplitude).shader;
+		});	
+		Lua_helper.add_callback(lua, "addPulseShader", function(obj:String,speed:Float = 0, frequency:Float = 0, amplitude:Float = 0) {
+			if(obj.startsWith('cam')){
+				PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new PulseEffect(speed, frequency, amplitude).shader));
+				return;
+			}
+			var killMe:Array<String> = obj.split('.');
+			var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+			if(killMe.length > 1) {
+				leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			}
+			if(leObj == null) {
+				luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+				return;
+			}
+			leObj.shader = new PulseEffect(speed, frequency, amplitude).shader;
+		});	
+		Lua_helper.add_callback(lua, "addInversionShader", function(obj:String, lockAlpha:Bool = true) {
+			if(obj.startsWith('cam')){
+				PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new InvertColorsEffect(lockAlpha).shader));
+				return;
+			}
+			var killMe:Array<String> = obj.split('.');
+			var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+			if(killMe.length > 1) {
+				leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			}
+			if(leObj == null) {
+				luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+				return;
+			}
+			leObj.shader = new InvertColorsEffect(lockAlpha).shader;
+		});	
+		Lua_helper.add_callback(lua, "addSolidColorShader", function(obj:String, colorString:String) {
+			var color = FlxColor.fromString(colorString);
+			if(obj.startsWith('cam')){
+				PlayState.instance.addShaderToCamera(obj, new ShaderFilter(new SolidColorEffect(color).shader));
+				return;
+			}
+			var killMe:Array<String> = obj.split('.');
+			var leObj:FlxSprite = getObjectDirectly(killMe[0]);
+			if(killMe.length > 1) {
+				leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			}
+			if(leObj == null) {
+				luaTrace("Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+				return;
+			}
+			leObj.shader = new SolidColorEffect(color).shader;
+		});
 		// gay ass tweens
 		Lua_helper.add_callback(lua, "doTweenX", function(tag:String, vars:String, value:Dynamic, duration:Float, ease:String) {
 			var penisExam:Dynamic = tweenShit(tag, vars);

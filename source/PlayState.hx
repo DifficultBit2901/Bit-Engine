@@ -151,6 +151,9 @@ class PlayState extends MusicBeatState
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
 
+	var filtershud:Array<BitmapFilter> = [];
+	var filtersgame:Array<BitmapFilter> = [];
+
 	public var spawnTime:Float = 2000;
 
 	public var vocals:FlxSound;
@@ -424,6 +427,11 @@ class PlayState extends MusicBeatState
 
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 		CustomFadeTransition.nextCamera = camOther;
+
+		camGame.setFilters(filtersgame);
+        camHUD.setFilters(filtershud);
+        camGame.filtersEnabled = true;
+        camHUD.filtersEnabled = true; 
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1709,6 +1717,40 @@ class PlayState extends MusicBeatState
 			luaArray.push(new FunkinLua(luaFile));
 		}
 		#end
+	}
+
+	public function addShaderToCamera(cam:String, shader:ShaderFilter){
+		switch(cam.toLowerCase()){
+			case 'camgame' | 'game':
+				filtersgame.push(shader);
+				camGame.setFilters(filtersgame);
+				trace(filtersgame);
+			case 'camhud' | 'hud':
+				filtershud.push(shader);
+				camHUD.setFilters(filtershud); 
+		}
+	}
+
+	public function removeShaderFromCamera(cam:String, shader:ShaderFilter) {
+		switch(cam.toLowerCase()){
+			case 'camgame' | 'game':
+				filtersgame.remove(shader);
+				camGame.setFilters(filtersgame);
+			case 'camhud' | 'hud':
+				filtershud.remove(shader);
+				camHUD.setFilters(filtershud);			
+		}
+	}
+
+	public function clearCameraShaders(camera:String){
+		switch(camera.toLowerCase()){
+			case 'camgame' | 'game':
+				filtersgame = [];
+				camGame.setFilters(filtersgame);
+			case 'camhud' | 'hud':
+				filtershud = [];
+				camHUD.setFilters(filtershud);
+		}
 	}
 
 	public function getLuaObject(tag:String, text:Bool=true):FlxSprite {
