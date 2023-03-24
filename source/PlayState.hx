@@ -1117,7 +1117,7 @@ class PlayState extends MusicBeatState
 				timeBGName = 'healthBar';
 			case 'Dave Engine':
 				timeBGName = 'timerBarDave';
-			case 'Extreme Engine':
+			case 'Dave Engine Alt':
 				timeBGName = 'timeBarExtreme';
 			case 'Leather Engine':
 				timeBGName = 'healthBar';
@@ -1142,7 +1142,7 @@ class PlayState extends MusicBeatState
 		timeBar.alpha = 0;
 		timeBar.visible = showTime;
 
-		if(['Dave Engine', 'Extreme Engine'].contains(ClientPrefs.timeBarStyle))
+		if(['Dave Engine', 'Dave Engine Alt'].contains(ClientPrefs.timeBarStyle))
 		{
 			add(timeBar);
 			add(timeBarBG);
@@ -1630,11 +1630,11 @@ class PlayState extends MusicBeatState
 		var empty = 0xFF000000;
 		switch(ClientPrefs.timeBarStyle)
 		{
-			case 'Kade Engine' | 'Dave Engine':
+			case 'Kade Engine Legacy' | 'Dave Engine':
 				color = 0xFF01F029;
 			case 'Leather Engine':
 				color = 0xFF00FFFF;
-			case 'Extreme Engine' | 'Opponent Color':
+			case 'Dave Engine Alt' | 'Opponent Color':
 				color = FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]);
 			case 'Difficult Engine':
 				color = FlxColor.fromHSB(timeBarHue, 1, 1);
@@ -1643,8 +1643,8 @@ class PlayState extends MusicBeatState
 		{
 			case 'Kade Engine':
 				empty = 0x00FFFFFF;
-			case 'Extreme Engine' | 'Dave Engine':
-				empty = 0xFF333333;
+			case 'Dave Engine Alt' | 'Dave Engine':
+				empty = 0xFF686868;
 		}
 		
 		timeBar.createFilledBar(empty, color);
@@ -4543,6 +4543,10 @@ class PlayState extends MusicBeatState
 							killMe[0] = 'dad';
 						case 'boyfriendGroup':
 							killMe[0] = 'dadGroup';
+						case 'iconP1':
+							killMe[0] = 'iconP2';
+						case 'iconP2':
+							killMe[0] = 'iconP1';
 					}
 				}
 				if(killMe.length > 1) {

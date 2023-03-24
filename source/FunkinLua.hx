@@ -997,6 +997,10 @@ class FunkinLua {
 						killMe[0] = 'dad';
 					case 'boyfriendGroup':
 						killMe[0] = 'dadGroup';
+					case 'iconP1':
+						killMe[0] = 'iconP2';
+					case 'iconP2':
+						killMe[0] = 'iconP1';
 				}
 			}
 			if(killMe.length > 1)
@@ -1020,6 +1024,10 @@ class FunkinLua {
 						killMe[0] = 'dad';
 					case 'boyfriendGroup':
 						killMe[0] = 'dadGroup';
+					case 'iconP1':
+						killMe[0] = 'iconP2';
+					case 'iconP2':
+						killMe[0] = 'iconP1';
 				}
 			}
 			if(killMe.length > 1) {
@@ -3415,6 +3423,23 @@ class FunkinLua {
 	function tweenShit(tag:String, vars:String) {
 		cancelTween(tag);
 		var variables:Array<String> = vars.split('.');
+		if(PlayState.instance.opponentMode)
+			{
+				switch(variables[0]){
+					case 'dad':
+						variables[0] = 'boyfriend';
+					case 'dadGroup':
+						variables[0] = 'boyfriendGroup';
+					case 'boyfriend':
+						variables[0] = 'dad';
+					case 'boyfriendGroup':
+						variables[0] = 'dadGroup';
+					case 'iconP1':
+						variables[0] = 'iconP2';
+					case 'iconP2':
+						variables[0] = 'iconP1';
+				}
+			}
 		var sexyProp:Dynamic = getObjectDirectly(variables[0]);
 		if(variables.length > 1) {
 			sexyProp = getVarInArray(getPropertyLoopThingWhatever(variables), variables[variables.length-1]);

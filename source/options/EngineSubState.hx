@@ -51,7 +51,7 @@ class EngineSubState extends BaseOptionsMenu
 			'timeBarStyle',
 			'string',
 			'Difficult Engine',
-			['Difficult Engine', 'Psych Engine', 'Kade Engine', 'Leather Engine', 'Dave Engine', 'Extreme Engine', 'Opponent Color']);
+			['Difficult Engine', 'Psych Engine', 'Kade Engine Legacy', 'Leather Engine', 'Dave Engine', 'Dave Engine Alt', 'Opponent Color']);
 		addOption(option);
 
 		#if MODS_ALLOWED
