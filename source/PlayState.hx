@@ -348,6 +348,8 @@ class PlayState extends MusicBeatState
 	var bfTrail:FlxTrail;
 	var dadTrail:FlxTrail;
 
+	public var shaderUpdates:Array<Float -> Void> = [];
+
 	override public function create()
 	{
 		//trace('Playback Rate: ' + playbackRate);
@@ -3068,6 +3070,9 @@ class PlayState extends MusicBeatState
 			iconP1.swapOldIcon();
 		}*/
 		callOnLuas('onUpdate', [elapsed]);
+
+		for(i in shaderUpdates)
+			i(elapsed);
 
 		timeBarHue += elapsed * Math.pow(Conductor.bpm, 2) / 100;
 		if(dad != null)
