@@ -90,30 +90,29 @@ class ModsMenuState extends MusicBeatState
 		visibleWhenNoMods.push(noModsTxt);
 
 		var path:String = 'modsList.txt';
-		if(FileSystem.exists(path))
+		var leMods:Array<String> = FileSystem.exists(path) ? CoolUtil.coolTextFile(path) : [];
+
+		if(leMods.length > 0 && leMods[0].length > 0)
 		{
-			var leMods:Array<String> = CoolUtil.coolTextFile(path);
 			for (i in 0...leMods.length)
 			{
-				if(leMods.length > 1 && leMods[0].length > 0) {
+				trace('looping');
+				if(leMods[i].length > 0 ) {
 					var modSplit:Array<String> = leMods[i].split('|');
 					if(!Paths.ignoreModFolders.contains(modSplit[0].toLowerCase()))
 					{
 						addToModsList([modSplit[0], (modSplit[1] == '1')]);
-						//trace(modSplit[1]);
+						// trace(modSplit[1]);
 					}
 				}
 			}
 		}
-
-		// FIND MOD FOLDERS
-		var boolshit = true;
-		if (FileSystem.exists("modsList.txt")){
+		else{
 			for (folder in Paths.getModDirectories())
 			{
 				if(!Paths.ignoreModFolders.contains(folder))
 				{
-					addToModsList([folder, true]); //i like it false by default. -bb //Well, i like it True! -Shadow
+					addToModsList([folder, false]); //i like it false by default. -bb //Well, i like it True! -Shadow
 				}
 			}
 		}
@@ -137,6 +136,7 @@ class ModsMenuState extends MusicBeatState
 				needaReset = true;
 			}
 			modsList[curSelected][1] = !modsList[curSelected][1];
+			trace(modsList[curSelected]);
 			updateButtonToggle();
 			FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
 		});
@@ -317,7 +317,8 @@ class ModsMenuState extends MusicBeatState
 
 		var i:Int = 0;
 		var len:Int = modsList.length;
-		while (i < modsList.length)
+		trace(len);
+		while (i < len)
 		{
 			var values:Array<Dynamic> = modsList[i];
 			if(!FileSystem.exists(Paths.mods(values[0])))
@@ -456,7 +457,7 @@ class ModsMenuState extends MusicBeatState
 			if(fileStr.length > 0) fileStr += '\n';
 			fileStr += values[0] + '|' + (values[1] ? '1' : '0');
 		}
-
+		trace('file: ' + fileStr);
 		var path:String = 'modsList.txt';
 		File.saveContent(path, fileStr);
 		Paths.pushGlobalMods();
@@ -483,6 +484,8 @@ class ModsMenuState extends MusicBeatState
 			if(needaReset)
 			{
 				//MusicBeatState.switchState(new TitleState());
+				DiscordClient.shutdown();
+				DiscordClient.isInitialized = false;
 				TitleState.initialized = false;
 				TitleState.closedState = false;
 				FlxG.sound.music.fadeOut(0.3);

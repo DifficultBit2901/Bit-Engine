@@ -1,5 +1,8 @@
 package;
 
+import haxe.Json;
+import sys.io.File;
+import sys.FileSystem;
 import Sys.sleep;
 import discord_rpc.DiscordRpc;
 
@@ -13,11 +16,27 @@ using StringTools;
 class DiscordClient
 {
 	public static var isInitialized:Bool = false;
+	private static var iconName:String = 'icon';
 	public function new()
 	{
 		trace("Discord Client starting...");
+		var id:String = "863222024192262205";
+		#if MODS_ALLOWED
+		var path = Paths.modsJson('discord');
+		if(FileSystem.exists(path))
+		{
+			var rawJson = File.getContent(path);
+			var info = Json.parse(rawJson);
+			iconName = info.image;
+			id = info.id;
+		}
+		else
+		{
+			trace('NO LOADED DISCORD.JSON');
+		}
+		#end
 		DiscordRpc.start({
-			clientID: "863222024192262205",
+			clientID: id,
 			onReady: onReady,
 			onError: onError,
 			onDisconnected: onDisconnected
@@ -44,7 +63,7 @@ class DiscordClient
 		DiscordRpc.presence({
 			details: "In the Menus",
 			state: null,
-			largeImageKey: 'icon',
+			largeImageKey: iconName,
 			largeImageText: "Difficult Engine"
 		});
 	}
@@ -81,8 +100,8 @@ class DiscordClient
 		DiscordRpc.presence({
 			details: details,
 			state: state,
-			largeImageKey: 'icon',
-			largeImageText: "Engine Version: " + MainMenuState.psychEngineVersion,
+			largeImageKey: iconName,
+			largeImageText: "Engine Version: " + MainMenuState.bitEngineVersion,
 			smallImageKey : smallImageKey,
 			// Obtained times are in milliseconds so they are divided so Discord can use it
 			startTimestamp : Std.int(startTimestamp / 1000),
