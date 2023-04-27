@@ -91,7 +91,16 @@ class ModsMenuState extends MusicBeatState
 
 		var path:String = 'modsList.txt';
 		var leMods:Array<String> = FileSystem.exists(path) ? CoolUtil.coolTextFile(path) : [];
-
+		var pushedMods:Array<String> = [];
+		// first load all mods
+		for (folder in Paths.getModDirectories())
+		{
+			if(!Paths.ignoreModFolders.contains(folder))
+			{
+				addToModsList([folder, false]); //i like it false by default. -bb //Well, i like it True! -Shadow 
+				pushedMods.push(folder);
+			}
+		}
 		if(leMods.length > 0 && leMods[0].length > 0)
 		{
 			for (i in 0...leMods.length)
@@ -99,22 +108,16 @@ class ModsMenuState extends MusicBeatState
 				trace('looping');
 				if(leMods[i].length > 0 ) {
 					var modSplit:Array<String> = leMods[i].split('|');
-					if(!Paths.ignoreModFolders.contains(modSplit[0].toLowerCase()))
+					if(!Paths.ignoreModFolders.contains(modSplit[0].toLowerCase()) && pushedMods.contains(modSplit[0]))
 					{
-						addToModsList([modSplit[0], (modSplit[1] == '1')]);
-						// trace(modSplit[1]);
+						var id = pushedMods.indexOf(modSplit[0]);
+						modsList[id][1] = modSplit[1] == '1';
 					}
 				}
 			}
 		}
 		else{
-			for (folder in Paths.getModDirectories())
-			{
-				if(!Paths.ignoreModFolders.contains(folder))
-				{
-					addToModsList([folder, false]); //i like it false by default. -bb //Well, i like it True! -Shadow
-				}
-			}
+
 		}
 		saveTxt();
 
