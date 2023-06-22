@@ -20,6 +20,16 @@ import haxe.format.JsonParser;
 
 using StringTools;
 
+// port this
+typedef CharacterGroupFile = {
+	group:Array<CharacterGroupEntry>
+}
+
+typedef CharacterGroupEntry = {
+	name:String,
+	position:Array<Float>
+}
+
 typedef CharacterFile = {
 	var animations:Array<AnimArray>;
 	var image:String;

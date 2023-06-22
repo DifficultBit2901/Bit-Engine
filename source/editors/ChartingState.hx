@@ -922,6 +922,8 @@ class ChartingState extends MusicBeatState
 	}
 
 	var stepperSusLength:FlxUINumericStepper;
+	// port this
+	var stepperPlayer:FlxUINumericStepper;
 	var strumTimeInputText:FlxUIInputText; //I wanted to use a stepper but we can't scale these as far as i know :(
 	var noteTypeDropDown:FlxUIDropDownMenuCustom;
 	var currentType:Int = 0;
@@ -935,6 +937,12 @@ class ChartingState extends MusicBeatState
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
 		blockPressWhileTypingOnStepper.push(stepperSusLength);
+
+		// port this
+		stepperPlayer = new FlxUINumericStepper(10, 145, 1, 0, 0, 5);
+		stepperPlayer.value = 0;
+		stepperPlayer.name = 'note_player';
+		blockPressWhileTypingOnStepper.push(stepperPlayer);
 
 		strumTimeInputText = new FlxUIInputText(10, 65, 180, "0");
 		tab_group_note.add(strumTimeInputText);
@@ -995,7 +1003,9 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(new FlxText(10, 10, 0, 'Sustain length:'));
 		tab_group_note.add(new FlxText(10, 50, 0, 'Strum time (in miliseconds):'));
 		tab_group_note.add(new FlxText(10, 90, 0, 'Note type:'));
+		tab_group_note.add(new FlxText(10, 130, 0, 'Character:')); // port this
 		tab_group_note.add(stepperSusLength);
+		tab_group_note.add(stepperPlayer); // port this
 		tab_group_note.add(strumTimeInputText);
 		tab_group_note.add(noteTypeDropDown);
 
@@ -1462,6 +1472,17 @@ class ChartingState extends MusicBeatState
 				if(curSelectedNote != null && curSelectedNote[2] != null) {
 					curSelectedNote[2] = nums.value;
 					updateGrid();
+				}
+			}
+			// port this
+			else if(wname == 'note_player')
+			{
+				if(curSelectedNote != null && curSelectedNote[1] > -1) {
+					curSelectedNote[4] = nums.value;
+					trace(curSelectedNote);
+					updateGrid();
+				} else {
+					sender.value = 0;
 				}
 			}
 			else if (wname == 'section_bpm')
@@ -2559,6 +2580,11 @@ class ChartingState extends MusicBeatState
 						noteTypeDropDown.selectedLabel = currentType + '. ' + curSelectedNote[3];
 					}
 				}
+				// port this
+				if(curSelectedNote[4] != null)
+					stepperPlayer.value = curSelectedNote[4];
+				else
+					stepperPlayer.value = 0;
 			} else {
 				eventDropDown.selectedLabel = curSelectedNote[1][curEventSelected][0];
 				var selected:Int = Std.parseInt(eventDropDown.selectedId);
@@ -2607,6 +2633,7 @@ class ChartingState extends MusicBeatState
 			}
 
 			if(i[3] != null && note.noteType != null && note.noteType.length > 0) {
+				trace(i[3]);
 				var typeInt:Null<Int> = noteTypeMap.get(i[3]);
 				var theType:String = '' + typeInt;
 				if(typeInt == null) theType = '?';
@@ -2619,6 +2646,21 @@ class ChartingState extends MusicBeatState
 				curRenderedNoteType.add(daText);
 				daText.sprTracker = note;
 			}
+			// port this
+			var typeInt:Null<Int> = note.playerData;
+			var theType:String = '' + typeInt;
+
+			var daText:AttachedFlxText = new AttachedFlxText(0, 0, 40, theType, 12);
+			daText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			daText.xAdd = 14;
+			daText.yAdd = 24;
+			daText.borderSize = 1;
+			curRenderedNoteType.add(daText);
+			daText.sprTracker = note;
+			
+			note.mustPress = _song.notes[curSection].mustHitSection;
+			if(i[1] > 3) note.mustPress = !note.mustPress;
+
 			note.mustPress = _song.notes[curSec].mustHitSection;
 			if(i[1] > 3) note.mustPress = !note.mustPress;
 		}
@@ -2688,9 +2730,11 @@ class ChartingState extends MusicBeatState
 			{
 				i[3] = noteTypeIntMap.get(i[3]);
 			}
+			// port this
+			note.playerData = i[4] == null ? 0 : i[4];
 			if(i.length > 3 && (i[3] == null || i[3].length < 1))
 			{
-				i.remove(i[3]);
+				i[3] = null;
 			}
 			note.sustainLength = daSus;
 			note.noteType = i[3];
@@ -2883,7 +2927,8 @@ class ChartingState extends MusicBeatState
 
 		if(noteData > -1)
 		{
-			_song.notes[curSec].sectionNotes.push([noteStrum, noteData, noteSus, noteTypeIntMap.get(daType)]);
+			// port this
+			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, noteTypeIntMap.get(daType), stepperPlayer.value]);
 			curSelectedNote = _song.notes[curSec].sectionNotes[_song.notes[curSec].sectionNotes.length - 1];
 		}
 		else
