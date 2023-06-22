@@ -20,7 +20,6 @@ import haxe.format.JsonParser;
 
 using StringTools;
 
-// port this
 typedef CharacterGroupFile = {
 	group:Array<CharacterGroupEntry>
 }

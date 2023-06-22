@@ -140,7 +140,6 @@ class PlayState extends MusicBeatState
 
 	public var playbackRate(default, set):Float = 1;
 
-	// port this
 	public var boyfriendGroup:FlxTypedSpriteGroup<Boyfriend>;
 	public var dadGroup:FlxTypedSpriteGroup<Character>;
 	public var gfGroup:FlxTypedSpriteGroup<Character>;
@@ -178,7 +177,6 @@ class PlayState extends MusicBeatState
 	public var strumLineNotes:FlxTypedGroup<StrumNote>;
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
 	public var playerStrums:FlxTypedGroup<StrumNote>;
-	// port this
 	public var player3Strums:FlxTypedGroup<StrumNote>;
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 
@@ -555,7 +553,6 @@ class PlayState extends MusicBeatState
 		if(girlfriendCameraOffset == null)
 			girlfriendCameraOffset = [0, 0];
 
-		// port this
 		boyfriendGroup = new FlxTypedSpriteGroup<Boyfriend>(BF_X, BF_Y);
 		dadGroup = new FlxTypedSpriteGroup<Character>(DAD_X, DAD_Y);
 		gfGroup = new FlxTypedSpriteGroup<Character>(GF_X, GF_Y);
@@ -1004,7 +1001,6 @@ class PlayState extends MusicBeatState
 
 		if (!stageData.hide_girlfriend)
 		{
-			// port this
 			var jsonPath = 'assets/characters/' + gfVersion + '.json';
 			var file:Character.CharacterGroupFile = null;
 			trace(jsonPath);
@@ -1058,7 +1054,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		// port this
 		var jsonPath = 'assets/characters/' + SONG.player2 + '.json';
 		var file:Character.CharacterGroupFile = null;
 		trace(jsonPath);
@@ -1089,7 +1084,6 @@ class PlayState extends MusicBeatState
 			dad = dadGroup.members[0];
 		}
 
-		// port this
 		var jsonPath = 'characters/' + SONG.player1 + '.json';
 		var file:Character.CharacterGroupFile = null;
 		if(FileSystem.exists(jsonPath))
@@ -1253,8 +1247,7 @@ class PlayState extends MusicBeatState
 
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
-		player3Strums = new FlxTypedGroup<StrumNote>(); // port this
-
+		player3Strums = new FlxTypedGroup<StrumNote>(); 
 		// startCountdown();
 
 		generateSong(SONG.song);
@@ -1739,7 +1732,7 @@ class PlayState extends MusicBeatState
 				if(!boyfriendMap.exists(newCharacter)) {
 					var newBoyfriend:Boyfriend = new Boyfriend(0, 0, newCharacter);
 					boyfriendMap.set(newCharacter, newBoyfriend);
-					// boyfriendGroup.add(newBoyfriend); // port this
+					// boyfriendGroup.add(newBoyfriend);
 					startCharacterPos(newBoyfriend);
 					newBoyfriend.alpha = 0.00001;
 					startCharacterLua(newBoyfriend.curCharacter);
@@ -1749,7 +1742,7 @@ class PlayState extends MusicBeatState
 				if(!dadMap.exists(newCharacter)) {
 					var newDad:Character = new Character(0, 0, newCharacter);
 					dadMap.set(newCharacter, newDad);
-					// dadGroup.add(newDad); // port this
+					// dadGroup.add(newDad);
 					startCharacterPos(newDad, true);
 					newDad.alpha = 0.00001;
 					startCharacterLua(newDad.curCharacter);
@@ -1760,7 +1753,7 @@ class PlayState extends MusicBeatState
 					var newGf:Character = new Character(0, 0, newCharacter);
 					newGf.scrollFactor.set(0.95, 0.95);
 					gfMap.set(newCharacter, newGf);
-					// gfGroup.add(newGf); // port this
+					// gfGroup.add(newGf);
 					startCharacterPos(newGf);
 					newGf.alpha = 0.00001;
 					startCharacterLua(newGf.curCharacter);
@@ -2395,8 +2388,7 @@ class PlayState extends MusicBeatState
 			}
 
 			startTimer = new FlxTimer().start(Conductor.crochet / 1000 / playbackRate, function(tmr:FlxTimer)
-			{
-				// port this
+			{				
 				gfGroup.forEach(function(gf:Character){
 					if (gf != null && tmr.loopsLeft % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && !gf.stunned && gf.animation.curAnim.name != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
 					{
@@ -2994,7 +2986,6 @@ class PlayState extends MusicBeatState
 			{
 				playerStrums.add(babyArrow);
 			}
-			// port this
 			else if(player == 2)
 			{
 				player3Strums.add(babyArrow);
@@ -3503,7 +3494,7 @@ class PlayState extends MusicBeatState
 				{
 					var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
 					if(!daNote.mustPress) strumGroup = opponentStrums;
-					if(daNote.isStrum3) strumGroup = player3Strums; // port this
+					if(daNote.isStrum3) strumGroup = player3Strums;
 
 					var strumX:Float = strumGroup.members[daNote.noteData].x;
 					var strumY:Float = strumGroup.members[daNote.noteData].y;
@@ -4525,7 +4516,6 @@ class PlayState extends MusicBeatState
 							var lastAlpha:Float = 1;
 							lastAlpha = boyfriend.alpha;
 							boyfriend.alpha = 0.00001;
-							// port this
 							boyfriendGroup.remove(boyfriend, true);
 							boyfriend = boyfriendMap.get(value2);
 							boyfriendGroup.insert(0, boyfriend);
@@ -4562,7 +4552,6 @@ class PlayState extends MusicBeatState
 							var lastAlpha:Float = dad.alpha;
 							var lastFlip = [dad.flipX, dad.flipY];
 							dad.alpha = 0.00001;
-							// port this
 							dadGroup.remove(dad, true);
 							dad = dadMap.get(value2);
 							dadGroup.insert(0, dad);
@@ -4600,7 +4589,6 @@ class PlayState extends MusicBeatState
 
 								var lastAlpha:Float = gf.alpha;
 								gf.alpha = 0.00001;
-								// port this
 								gfGroup.remove(gf, true);
 								gf = gfMap.get(value2);
 								gfGroup.insert(0, gf);
@@ -5439,7 +5427,6 @@ class PlayState extends MusicBeatState
 		totalPlayed++;
 		RecalculateRating(true);
 
-		// port this
 		var char:Character = boyfriendGroup.members[daNote.playerData % boyfriendGroup.length];
 		if(daNote.gfNote) {
 			char = gfGroup.members[daNote.playerData % gfGroup.length];
@@ -5520,17 +5507,16 @@ class PlayState extends MusicBeatState
 			}
 
 			var animToPlay:String = singAnimations[Std.int(Math.abs(note.noteData))] + altAnim;
-			// port this
 			var char:Character = dadGroup.members[note.playerData % dadGroup.length];
 			if(note.gfNote) {
 				char = gfGroup.members[note.playerData % gfGroup.length];
 			}
 
-			if(char.animation.getByName(animToPlay) == null)
-				animToPlay = singAnimations[Std.int(Math.abs(note.noteData))];
-
+			
 			if(char != null)
 			{
+				if(char.animation.getByName(animToPlay) == null)
+					animToPlay = singAnimations[Std.int(Math.abs(note.noteData))];
 				char.playAnim(animToPlay, true);
 				char.holdTimer = 0;
 			}
@@ -5543,7 +5529,7 @@ class PlayState extends MusicBeatState
 		if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
 			time += 0.15;
 		}
-		StrumPlayAnim(true, Std.int(Math.abs(note.noteData)), time, note.isStrum3); // port this
+		StrumPlayAnim(true, Std.int(Math.abs(note.noteData)), time, note.isStrum3);
 		note.hitByOpponent = true;
 
 		callOnLuas('opponentNoteHit', [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote, note.isStrum3]);
@@ -5614,7 +5600,6 @@ class PlayState extends MusicBeatState
 				}
 				var animToPlay:String = singAnimations[Std.int(Math.abs(note.noteData))] + altAnim;
 
-				// port this
 				var char:Character = (note.gfNote && gfGroup.length > 0) ? gfGroup.members[note.playerData % gfGroup.length] : boyfriendGroup.members[note.playerData % boyfriendGroup.length];
 
 				if(!char.animOffsets.exists(animToPlay))
@@ -6088,7 +6073,6 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	// port this
 	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, isP3:Bool = false) {
 		var spr:StrumNote = null;
 		if(isDad) {

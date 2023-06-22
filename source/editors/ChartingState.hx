@@ -68,7 +68,6 @@ class ChartingState extends MusicBeatState
 		'Hurt Note',
 		'GF Sing',
 		'No Animation',
-		// port this
 		'Strum 3 Note',
 		'GF Strum 3 Note'
 	];
@@ -925,7 +924,6 @@ class ChartingState extends MusicBeatState
 	}
 
 	var stepperSusLength:FlxUINumericStepper;
-	// port this
 	var stepperPlayer:FlxUINumericStepper;
 	var strumTimeInputText:FlxUIInputText; //I wanted to use a stepper but we can't scale these as far as i know :(
 	var noteTypeDropDown:FlxUIDropDownMenuCustom;
@@ -941,7 +939,6 @@ class ChartingState extends MusicBeatState
 		stepperSusLength.name = 'note_susLength';
 		blockPressWhileTypingOnStepper.push(stepperSusLength);
 
-		// port this
 		stepperPlayer = new FlxUINumericStepper(10, 145, 1, 0, 0, 5);
 		stepperPlayer.value = 0;
 		stepperPlayer.name = 'note_player';
@@ -1006,9 +1003,9 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(new FlxText(10, 10, 0, 'Sustain length:'));
 		tab_group_note.add(new FlxText(10, 50, 0, 'Strum time (in miliseconds):'));
 		tab_group_note.add(new FlxText(10, 90, 0, 'Note type:'));
-		tab_group_note.add(new FlxText(10, 130, 0, 'Character:')); // port this
+		tab_group_note.add(new FlxText(10, 130, 0, 'Character:'));
 		tab_group_note.add(stepperSusLength);
-		tab_group_note.add(stepperPlayer); // port this
+		tab_group_note.add(stepperPlayer); 
 		tab_group_note.add(strumTimeInputText);
 		tab_group_note.add(noteTypeDropDown);
 
@@ -1477,7 +1474,6 @@ class ChartingState extends MusicBeatState
 					updateGrid();
 				}
 			}
-			// port this
 			else if(wname == 'note_player')
 			{
 				if(curSelectedNote != null && curSelectedNote[1] > -1) {
@@ -2583,7 +2579,6 @@ class ChartingState extends MusicBeatState
 						noteTypeDropDown.selectedLabel = currentType + '. ' + curSelectedNote[3];
 					}
 				}
-				// port this
 				if(curSelectedNote[4] != null)
 					stepperPlayer.value = curSelectedNote[4];
 				else
@@ -2649,7 +2644,6 @@ class ChartingState extends MusicBeatState
 				curRenderedNoteType.add(daText);
 				daText.sprTracker = note;
 			}
-			// port this
 			var typeInt:Null<Int> = note.playerData;
 			var theType:String = '' + typeInt;
 
@@ -2733,7 +2727,6 @@ class ChartingState extends MusicBeatState
 			{
 				i[3] = noteTypeIntMap.get(i[3]);
 			}
-			// port this
 			note.playerData = i[4] == null ? 0 : i[4];
 			if(i.length > 3 && (i[3] == null || i[3].length < 1))
 			{
@@ -2930,7 +2923,6 @@ class ChartingState extends MusicBeatState
 
 		if(noteData > -1)
 		{
-			// port this
 			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, noteTypeIntMap.get(daType), stepperPlayer.value]);
 			curSelectedNote = _song.notes[curSec].sectionNotes[_song.notes[curSec].sectionNotes.length - 1];
 		}

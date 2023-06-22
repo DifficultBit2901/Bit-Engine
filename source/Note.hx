@@ -24,8 +24,8 @@ class Note extends FlxSprite
 	public var strumTime:Float = 0;
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
-	public var playerData:Int = 0; // port this
-	public var isStrum3:Bool = false; // port this
+	public var playerData:Int = 0; 
+	public var isStrum3:Bool = false; 
 	public var canBeHit:Bool = false; 
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
@@ -154,7 +154,6 @@ class Note extends FlxSprite
 					noMissAnimation = true;
 				case 'GF Sing':
 					gfNote = true;
-				// port this
 				case 'Strum 3 Note':
 					isStrum3 = true;
 				case 'GF Strum 3 Note':
@@ -353,7 +352,6 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 
-		// port this
 		if(mustPress && isStrum3)
 			mustPress = false;
 
