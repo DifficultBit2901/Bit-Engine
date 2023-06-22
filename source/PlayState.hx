@@ -178,6 +178,8 @@ class PlayState extends MusicBeatState
 	public var strumLineNotes:FlxTypedGroup<StrumNote>;
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
 	public var playerStrums:FlxTypedGroup<StrumNote>;
+	// port this
+	public var player3Strums:FlxTypedGroup<StrumNote>;
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 
 	public var camZooming:Bool = false;
@@ -1251,6 +1253,7 @@ class PlayState extends MusicBeatState
 
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
+		player3Strums = new FlxTypedGroup<StrumNote>(); // port this
 
 		// startCountdown();
 
@@ -2360,6 +2363,7 @@ class PlayState extends MusicBeatState
 
 			generateStaticArrows(0);
 			generateStaticArrows(1);
+			generateStaticArrows(2); // port this
 			for (i in 0...playerStrums.length) {
 				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
 				setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y);
@@ -2503,7 +2507,7 @@ class PlayState extends MusicBeatState
 				}
 
 				notes.forEachAlive(function(note:Note) {
-					if(ClientPrefs.opponentStrums || note.mustPress)
+					if(ClientPrefs.opponentStrums || (note.mustPress && !note.isStrum3))
 					{
 						note.copyAlpha = false;
 						note.alpha = note.multAlpha;
@@ -2989,6 +2993,11 @@ class PlayState extends MusicBeatState
 			if (player == 1)
 			{
 				playerStrums.add(babyArrow);
+			}
+			// port this
+			else if(player == 2)
+			{
+				player3Strums.add(babyArrow);
 			}
 			else
 			{
@@ -3494,6 +3503,7 @@ class PlayState extends MusicBeatState
 				{
 					var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
 					if(!daNote.mustPress) strumGroup = opponentStrums;
+					if(daNote.isStrum3) strumGroup = player3Strums; // port this
 
 					var strumX:Float = strumGroup.members[daNote.noteData].x;
 					var strumY:Float = strumGroup.members[daNote.noteData].y;
@@ -5533,10 +5543,10 @@ class PlayState extends MusicBeatState
 		if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
 			time += 0.15;
 		}
-		StrumPlayAnim(true, Std.int(Math.abs(note.noteData)), time);
+		StrumPlayAnim(true, Std.int(Math.abs(note.noteData)), time, note.isStrum3); // port this
 		note.hitByOpponent = true;
 
-		callOnLuas('opponentNoteHit', [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
+		callOnLuas('opponentNoteHit', [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote, note.isStrum3]);
 
 		if (!note.isSustainNote)
 		{
@@ -6078,13 +6088,16 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	function StrumPlayAnim(isDad:Bool, id:Int, time:Float) {
+	// port this
+	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, isP3:Bool = false) {
 		var spr:StrumNote = null;
 		if(isDad) {
 			spr = strumLineNotes.members[id];
 		} else {
 			spr = playerStrums.members[id];
 		}
+		if(isP3 && player3Strums != null && player3Strums.length > 0)
+			spr = player3Strums.members[id];
 
 		if(spr != null) {
 			spr.playAnim('confirm', true);

@@ -123,7 +123,11 @@ class StrumNote extends FlxSprite
 		playAnim('static');
 		x += Note.swagWidth * noteData;
 		x += 50;
-		x += ((FlxG.width / 2) * (PlayState.instance.isStageFlipped && !ClientPrefs.middleScroll ? 1 - player : player));
+		// port this
+		if(player == 2)
+			x -= FlxG.width / 2;
+		else
+			x += ((FlxG.width / 2) * (PlayState.instance.isStageFlipped && !ClientPrefs.middleScroll ? 1 - player : player));
 		ID = noteData;
 	}
 
