@@ -1000,73 +1000,94 @@ class PlayState extends MusicBeatState
 		}
 
 		if (!stageData.hide_girlfriend)
-		{
-			var jsonPath = 'assets/characters/' + gfVersion + '.json';
-			var file:Character.CharacterGroupFile = null;
-			trace(jsonPath);
-			if(FileSystem.exists(jsonPath))
 			{
-				var content = File.getContent(jsonPath);
-				// trace(content);
-				if(content.contains('"group":'))
-					file = Json.parse(content);
-			}
-			if(file == null)
-			{
-				gf = new Character(0, 0, gfVersion);
-				startCharacterPos(gf);
-				gfGroup.add(gf);
-				startCharacterLua(gf.curCharacter);
-			}
-			else
-			{
-				for(charData in file.group)
+				var shortPath = '/characters/' + gfVersion + '.json';
+				var file:Character.CharacterGroupFile = null;
+				// trace(jsonPath);
+				#if MODS_ALLOWED
+				var jsonPath = 'mods/' + Paths.currentModDirectory + shortPath;
+				if(!FileSystem.exists(jsonPath))
+					jsonPath = 
+				#else
+				var jsonPath = 
+				#end
+				'assets$shortPath';
+				if(FileSystem.exists(jsonPath))
 				{
-					// trace(charData.name);
-					var char = new Character(charData.position[0], charData.position[1], charData.name);
-					startCharacterPos(char);
-					gfGroup.add(char);
-					startCharacterLua(char.curCharacter);
+					var content = File.getContent(jsonPath);
+					trace(content);
+					if(content.contains('"group":'))
+						file = Json.parse(content);
 				}
-				gf = gfGroup.members[0];
-			}
-			gfGroup.scrollFactor.set(0.95, 0.95);
-
-			if(gfVersion == 'pico-speaker')
-			{
-				if(!ClientPrefs.lowQuality)
+				else
+					gfVersion = 'gf';
+				if(file == null)
 				{
-					var firstTank:TankmenBG = new TankmenBG(20, 500, true);
-					firstTank.resetShit(20, 600, true);
-					firstTank.strumTime = 10;
-					tankmanRun.add(firstTank);
-
-					for (i in 0...TankmenBG.animationNotes.length)
+					gf = new Character(0, 0, gfVersion);
+					startCharacterPos(gf);
+					gfGroup.add(gf);
+					startCharacterLua(gf.curCharacter);
+				}
+				else
+				{
+					for(charData in file.group)
 					{
-						if(FlxG.random.bool(16)) {
-							var tankBih = tankmanRun.recycle(TankmenBG);
-							tankBih.strumTime = TankmenBG.animationNotes[i][0];
-							tankBih.resetShit(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
-							tankmanRun.add(tankBih);
+						// trace(charData.name);
+						var char = new Character(charData.position[0], charData.position[1], charData.name);
+						startCharacterPos(char);
+						gfGroup.add(char);
+						startCharacterLua(char.curCharacter);
+					}
+					gf = gfGroup.members[0];
+				}
+				gfGroup.scrollFactor.set(0.95, 0.95);
+	
+			if(gfVersion == 'pico-speaker')
+				{
+					if(!ClientPrefs.lowQuality)
+					{
+						var firstTank:TankmenBG = new TankmenBG(20, 500, true);
+						firstTank.resetShit(20, 600, true);
+						firstTank.strumTime = 10;
+						tankmanRun.add(firstTank);
+
+						for (i in 0...TankmenBG.animationNotes.length)
+						{
+							if(FlxG.random.bool(16))
+							{
+								var tankBih = tankmanRun.recycle(TankmenBG);
+								tankBih.strumTime = TankmenBG.animationNotes[i][0];
+								tankBih.resetShit(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
+								tankmanRun.add(tankBih);
+							}
 						}
 					}
 				}
-			}
 		}
 
-		var jsonPath = 'assets/characters/' + SONG.player2 + '.json';
+		var shortPath = '/characters/' + (!opponentMode ? SONG.player2 : SONG.player2) + '.json';
 		var file:Character.CharacterGroupFile = null;
-		trace(jsonPath);
+		// trace(jsonPath);
+		#if MODS_ALLOWED
+		var jsonPath = 'mods/' + Paths.currentModDirectory + shortPath;
+		if(!FileSystem.exists(jsonPath))
+			jsonPath = 
+		#else
+		var jsonPath = 
+		#end
+		'assets$shortPath';
 		if(FileSystem.exists(jsonPath))
 		{
 			var content = File.getContent(jsonPath);
-			// trace(content);
+			trace(content);
 			if(content.contains('"group":'))
 				file = Json.parse(content);
 		}
+		else
+			SONG.player2 = 'bf';
 		if(file == null)
 		{
-			dad = new Character(0, 0, SONG.player2);
+			dad = new Character(0, 0, !opponentMode ? SONG.player2 : SONG.player2);
 			startCharacterPos(dad, true);
 			dadGroup.add(dad);
 			startCharacterLua(dad.curCharacter);
@@ -1075,7 +1096,7 @@ class PlayState extends MusicBeatState
 		{
 			for(charData in file.group)
 			{
-				// trace(charData.name);
+				trace(charData.name);
 				var char = new Character(charData.position[0], charData.position[1], charData.name);
 				startCharacterPos(char);
 				dadGroup.add(char);
@@ -1084,17 +1105,29 @@ class PlayState extends MusicBeatState
 			dad = dadGroup.members[0];
 		}
 
-		var jsonPath = 'characters/' + SONG.player1 + '.json';
+		var shortPath = '/characters/' + (opponentMode ? SONG.player2 : SONG.player1) + '.json';
 		var file:Character.CharacterGroupFile = null;
+		// trace(jsonPath);
+		#if MODS_ALLOWED
+		var jsonPath = 'mods/' + Paths.currentModDirectory + shortPath;
+		if(!FileSystem.exists(jsonPath))
+			jsonPath = 
+		#else
+		var jsonPath = 
+		#end
+		'assets$shortPath';
 		if(FileSystem.exists(jsonPath))
 		{
 			var content = File.getContent(jsonPath);
+			trace(content);
 			if(content.contains('"group":'))
 				file = Json.parse(content);
 		}
+		else
+			SONG.player2 = 'bf';
 		if(file == null)
 		{
-			boyfriend = new Boyfriend(0, 0, SONG.player1);
+			boyfriend = new Boyfriend(0, 0, opponentMode ? SONG.player2 : SONG.player1);
 			startCharacterPos(boyfriend);
 			boyfriendGroup.add(boyfriend);
 			startCharacterLua(boyfriend.curCharacter);
