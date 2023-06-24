@@ -168,7 +168,8 @@ class GroupEditorState extends MusicBeatState
 		check_player.callback = function()
 		{
             charLayer.forEach(function(char:Character){
-                char.isPlayer = !char.isPlayer;
+                char.isPlayer = !char.isPlayer;                
+                char.flipX = !char.flipX;
             });
 		};
 
@@ -317,6 +318,14 @@ class GroupEditorState extends MusicBeatState
                 changeChar(1);
             else if(FlxG.keys.justPressed.S)
                 changeChar(-1);
+            else if(FlxG.keys.justPressed.ENTER)
+                {
+                    if(UI_box.selected_tab == 0)
+                        this.charName.hasFocus = true;
+                    else
+                        this.healthIconInputText.hasFocus = true;
+    
+                }
             if(FlxG.keys.pressed.J)
                 camFollow.x -= shiftMult;
             if(FlxG.keys.pressed.L)
