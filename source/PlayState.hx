@@ -162,6 +162,10 @@ class PlayState extends MusicBeatState
 	public var gf:Character = null;
 	public var boyfriend:Boyfriend = null;
 
+	var healthBarColors:Array<Int> = [];
+	var healthBarIcons:Array<String> = [];
+	var groupOffsets:Array<Array<Float>> = [];
+
 	public var notes:FlxTypedGroup<Note>;
 	public var unspawnNotes:Array<Note> = [];
 	public var eventNotes:Array<EventNote> = [];
@@ -1027,6 +1031,7 @@ class PlayState extends MusicBeatState
 					startCharacterPos(gf);
 					gfGroup.add(gf);
 					startCharacterLua(gf.curCharacter);
+					groupOffsets[2] = [0, 0];
 				}
 				else
 				{
@@ -1039,6 +1044,7 @@ class PlayState extends MusicBeatState
 						startCharacterLua(char.curCharacter);
 					}
 					gf = gfGroup.members[0];
+					groupOffsets[2] = file.cam_offset != null && file.cam_offset.length > 1 ? file.cam_offset : [0, 0];
 				}
 				gfGroup.scrollFactor.set(0.95, 0.95);
 	
@@ -1091,6 +1097,9 @@ class PlayState extends MusicBeatState
 			startCharacterPos(dad, true);
 			dadGroup.add(dad);
 			startCharacterLua(dad.curCharacter);
+			healthBarColors[0] = FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]);
+			healthBarIcons[0] = dad.healthIcon;
+			groupOffsets[0] = [0, 0];
 		}
 		else
 		{
@@ -1103,6 +1112,9 @@ class PlayState extends MusicBeatState
 				startCharacterLua(char.curCharacter);
 			}
 			dad = dadGroup.members[0];
+			healthBarColors[0] = file.healthBarColors != null && file.healthBarColors.length > 2 ? FlxColor.fromRGB(file.healthBarColors[0], file.healthBarColors[1], file.healthBarColors[2]) : FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]);
+			healthBarIcons[0] = file.icon != null && file.icon != '' ? file.icon : dad.healthIcon;
+			groupOffsets[0] = file.cam_offset != null && file.cam_offset.length > 1 ? file.cam_offset : [0, 0];
 		}
 
 		var shortPath = '/characters/' + (opponentMode ? SONG.player2 : SONG.player1) + '.json';
@@ -1131,6 +1143,9 @@ class PlayState extends MusicBeatState
 			startCharacterPos(boyfriend);
 			boyfriendGroup.add(boyfriend);
 			startCharacterLua(boyfriend.curCharacter);
+			healthBarColors[1] = FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]);
+			healthBarIcons[1] = boyfriend.healthIcon;
+			groupOffsets[1] = [0, 0];
 		}
 		else
 		{
@@ -1142,6 +1157,9 @@ class PlayState extends MusicBeatState
 				startCharacterLua(char.curCharacter);
 			}
 			boyfriend = boyfriendGroup.members[0];
+			healthBarColors[1] = file.healthBarColors != null && file.healthBarColors.length > 2 ? FlxColor.fromRGB(file.healthBarColors[0], file.healthBarColors[1], file.healthBarColors[2]) : FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]);
+			healthBarIcons[1] = file.icon != null && file.icon != '' ? file.icon : boyfriend.healthIcon;
+			groupOffsets[1] = file.cam_offset != null && file.cam_offset.length > 1 ? file.cam_offset : [0, 0];
 		}
 
 		if(opponentMode)
@@ -1335,13 +1353,13 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 		healthBarBG.sprTracker = healthBar;
 
-		iconP1 = new HealthIcon(boyfriend.healthIcon, true);
+		iconP1 = new HealthIcon(healthBarIcons[1], true);
 		iconP1.y = healthBar.y - 75;
 		iconP1.visible = !ClientPrefs.hideHud;
 		iconP1.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP1);
 
-		iconP2 = new HealthIcon(dad.healthIcon, false);
+		iconP2 = new HealthIcon(healthBarIcons[0], false);
 		iconP2.y = healthBar.y - 75;
 		iconP2.visible = !ClientPrefs.hideHud;
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
@@ -1727,8 +1745,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public function reloadHealthBarColors() {
-		healthBar.createFilledBar(FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]),
-			FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]));
+		healthBar.createFilledBar(healthBarColors[0], healthBarColors[1]);
 
 		healthBar.updateBar();
 	}
@@ -4540,6 +4557,7 @@ class PlayState extends MusicBeatState
 				if(charType < 2 && opponentMode)
 					charType = 1 - charType;
 				trace('$value1 => $charType');
+				var skipReload = false;
 				switch(charType) {
 					case 0:
 						if(boyfriend.curCharacter != value2) {
@@ -4551,6 +4569,8 @@ class PlayState extends MusicBeatState
 							var lastAlpha:Float = 1;
 							lastAlpha = boyfriend.alpha;
 							boyfriend.alpha = 0.00001;
+							if(boyfriendGroup.length > 1)
+								skipReload = true;
 							boyfriendGroup.remove(boyfriend, true);
 							boyfriend = boyfriendMap.get(value2);
 							boyfriendGroup.insert(0, boyfriend);
@@ -4568,7 +4588,6 @@ class PlayState extends MusicBeatState
 							// boyfriend.flipY = lastFlip[1];
 							if(opponentMode)
 								boyfriend.flipX = !boyfriend.flipX;
-							iconP1.changeIcon(boyfriend.healthIcon);
 							if(bfTrail != null){
 								remove(bfTrail);
 								bfTrail = new FlxTrail(boyfriend, null, 7, 3, 0.4, 0.04);
@@ -4576,6 +4595,8 @@ class PlayState extends MusicBeatState
 								insert(members.indexOf(gfGroup), bfTrail);
 							}
 						}
+						else
+							skipReload = true;
 						setOnLuas(!opponentMode ? 'boyfriendName' : 'dadName', boyfriend.curCharacter);
 					case 1:
 						if(dad.curCharacter != value2) {
@@ -4586,7 +4607,9 @@ class PlayState extends MusicBeatState
 							var wasGf:Bool = dad.curCharacter.startsWith('gf');
 							var lastAlpha:Float = dad.alpha;
 							var lastFlip = [dad.flipX, dad.flipY];
-							dad.alpha = 0.00001;
+							dad.alpha = 0.00001;							
+							if(dadGroup.length > 1)
+								skipReload = true;
 							dadGroup.remove(dad, true);
 							dad = dadMap.get(value2);
 							dadGroup.insert(0, dad);
@@ -4602,7 +4625,6 @@ class PlayState extends MusicBeatState
 							// dad.flipY = lastFlip[1];
 							if(opponentMode)
 								dad.flipX = !dad.flipX;
-							iconP2.changeIcon(dad.healthIcon);
 							if(dadTrail != null)
 							{
 								remove(dadTrail);
@@ -4611,6 +4633,8 @@ class PlayState extends MusicBeatState
 								insert(members.indexOf(gfGroup), dadTrail);
 							}
 						}
+						else
+							skipReload = true;
 						setOnLuas(opponentMode ? 'boyfriendName' : 'dadName', boyfriend.curCharacter);
 					case 2:
 						if(gf != null)
@@ -4624,15 +4648,31 @@ class PlayState extends MusicBeatState
 
 								var lastAlpha:Float = gf.alpha;
 								gf.alpha = 0.00001;
+								if(gfGroup.length > 1)
+									skipReload = true;
 								gfGroup.remove(gf, true);
 								gf = gfMap.get(value2);
 								gfGroup.insert(0, gf);
 								gf.alpha = lastAlpha;
 							}
+							else
+								skipReload = true;
 							setOnLuas('gfName', gf.curCharacter);
 						}
 				}
-				reloadHealthBarColors();
+				if(!skipReload)
+				{
+					switch(charType)
+					{
+						case 0:
+							healthBarColors[1] = FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]);
+							iconP1.changeIcon(boyfriend.healthIcon);
+						case 1:
+							iconP2.changeIcon(dad.healthIcon);
+							healthBarColors[0] = FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]);
+					}
+					reloadHealthBarColors();
+				}
 
 			case 'BG Freaks Expression':
 				if(bgGirls != null) bgGirls.swapDanceType();
@@ -4720,8 +4760,8 @@ class PlayState extends MusicBeatState
 		if (gf != null && SONG.notes[curSection].gfSection)
 		{
 			camFollow.set(gf.getMidpoint().x, gf.getMidpoint().y);
-			camFollow.x += gf.cameraPosition[0] + girlfriendCameraOffset[0];
-			camFollow.y += gf.cameraPosition[1] + girlfriendCameraOffset[1];
+			camFollow.x += gf.cameraPosition[0] + girlfriendCameraOffset[0] + groupOffsets[2][0];
+			camFollow.y += gf.cameraPosition[1] + girlfriendCameraOffset[1] + groupOffsets[2][1];
 			tweenCamIn();
 			callOnLuas('onMoveCamera', ['gf']);
 			return;
@@ -4752,6 +4792,8 @@ class PlayState extends MusicBeatState
 			else
 				camFollow.x += dad.cameraPosition[0] + opponentCameraOffset[0];
 			camFollow.y += dad.cameraPosition[1] + opponentCameraOffset[1];
+			camFollow.x += groupOffsets[0][0];
+			camFollow.y += groupOffsets[0][1];
 			tweenCamIn();
 		}
 		else
@@ -4762,6 +4804,8 @@ class PlayState extends MusicBeatState
 			else
 				camFollow.x -= boyfriend.cameraPosition[0] - boyfriendCameraOffset[0];
 			camFollow.y += boyfriend.cameraPosition[1] + boyfriendCameraOffset[1];
+			camFollow.x += groupOffsets[1][0];
+			camFollow.y += groupOffsets[1][1];
 
 			if (Paths.formatToSongPath(SONG.song) == 'tutorial' && cameraTwn == null && FlxG.camera.zoom != 1)
 			{

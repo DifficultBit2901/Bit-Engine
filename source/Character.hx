@@ -21,7 +21,10 @@ import haxe.format.JsonParser;
 using StringTools;
 
 typedef CharacterGroupFile = {
-	group:Array<CharacterGroupEntry>
+	group:Array<CharacterGroupEntry>,
+	cam_offset:Array<Float>,
+	icon:String,
+	healthBarColors:Array<Int>
 }
 
 typedef CharacterGroupEntry = {

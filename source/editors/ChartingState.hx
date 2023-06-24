@@ -2561,7 +2561,8 @@ class ChartingState extends MusicBeatState
 		#else
 		var rawJson = OpenFlAssets.getText(path);
 		#end
-
+		if(rawJson.contains('"group":'))
+			return Json.parse(rawJson).icon;
 		var json:Character.CharacterFile = cast Json.parse(rawJson);
 		return json.healthicon;
 	}
